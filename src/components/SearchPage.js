@@ -83,6 +83,12 @@ const SearchPage = ({ onNavigate, initialFilters }) => {
         }
       }
     }
+    if (filtersToApply.includedServices && filtersToApply.includedServices.length > 0) {
+      results = results.filter(property =>
+        property.includedServices &&
+        filtersToApply.includedServices.every(servicio => property.includedServices.includes(servicio))
+      );
+    }
     
     setFilteredProperties(results);
   };

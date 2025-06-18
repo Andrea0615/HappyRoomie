@@ -7,6 +7,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
   const [customBathrooms, setCustomBathrooms] = useState('');
   const [customParking, setCustomParking] = useState('');
   const [customRooms, setCustomRooms] = useState('');
+  const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
 
   const propertyTypeOptions = [
     "Casa",
@@ -65,9 +66,28 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
   ];
 
   const amenitiesList = [
-    "Amueblado", "Internet", "Servicios incluidos", "Cocina compartida", 
-    "Baño privado", "Estacionamiento", "Gimnasio", "Terraza", 
-    "Seguridad 24/7", "Lavandería", "Pet friendly", "Áreas comunes"
+    "Casa Club",
+    "Alberca",
+    "Gym",
+    "Jardín",
+    "Asadores",
+    "Pista para correr",
+    "Actividades deportivas",
+    "Lavadora",
+    "Secadora",
+    "Hamaca",
+    "Roof-top",
+    "Estacionamiento techado"
+  ];
+
+  const serviciosIncluidosList = [
+    "Luz",
+    "Agua",
+    "Gas",
+    "Internet",
+    "Limpieza",
+    "Mantenimiento",
+    "Agua potable"
   ];
 
   const MIN_PRICE = 3500;
@@ -412,81 +432,83 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         )}
 
         {/* Número de baños */}
-        <div>
-          <h3 className="text-md font-medium text-black mb-3">Número de baños</h3>
-          <div className="flex flex-wrap gap-2 items-center">
-            {numberOfBathroomsOptions.map((option) => (
-              <div key={option} className="flex items-center">
-                <button
-                  type="button"
-                  onClick={() => handleNumberOfBathroomsSelect(option)}
-                  className={`px-3 py-2 text-sm rounded-md transition-colors ${
-                    filters.numberOfBathrooms === option && option !== "+"
-                      ? 'bg-[#FFDC30] text-black font-medium' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {option}
-                </button>
-                {(option === "+" && (filters.numberOfBathrooms === "+" || parseInt(filters.numberOfBathrooms) > 3)) && (
-                  <div className="ml-2 w-20">
-                    <Select
-                      options={[...Array(7)].map((_, i) => ({ value: (i + 4).toString(), label: (i + 4).toString() }))}
-                      value={
-                        [...Array(7)].map((_, i) => ({ value: (i + 4).toString(), label: (i + 4).toString() }))
-                          .find(opt => opt.value === filters.numberOfBathrooms) || null
-                      }
-                      onChange={selected => {
-                        setCustomBathrooms(selected.value);
-                        handleFilterChangeInternal({ numberOfBathrooms: selected.value });
-                      }}
-                      isSearchable={false}
-                      classNamePrefix="custom-select"
-                      styles={{
-                        ...getSelectStyles(filters.numberOfBathrooms),
-                        option: (provided, state) => ({
-                          ...provided,
-                          fontSize: '0.875rem',
-                          color: '#000',
-                          backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
-                          fontWeight: state.isSelected ? 600 : 400,
-                        }),
-                        singleValue: (provided) => ({
-                          ...provided,
-                          fontSize: '0.8rem',
-                          color: '#000',
-                          fontWeight: 600,
-                        }),
-                        control: (provided, state) => ({
-                          ...provided,
-                          height: '2.5rem',
-                          padding: '0 0.25rem',
-                          minWidth: '56px',
-                          backgroundColor: '#fff',
-                          color: '#000',
-                        }),
-                      }}
-                      theme={theme => ({
-                        ...theme,
-                        colors: {
-                          ...theme.colors,
-                          neutral0: '#fff',
-                          primary25: '#fff',
-                          primary: '#FFDC30',
-                          neutral80: '#000',
-                          neutral20: '#ccc',
-                          neutral30: '#ccc',
-                          neutral40: '#ccc',
+        {(filters.propertyType === "Casa" || filters.propertyType === "Departamento") && (
+          <div>
+            <h3 className="text-md font-medium text-black mb-3">Número de baños</h3>
+            <div className="flex flex-wrap gap-2 items-center">
+              {numberOfBathroomsOptions.map((option) => (
+                <div key={option} className="flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => handleNumberOfBathroomsSelect(option)}
+                    className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                      filters.numberOfBathrooms === option && option !== "+"
+                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                  {(option === "+" && (filters.numberOfBathrooms === "+" || parseInt(filters.numberOfBathrooms) > 3)) && (
+                    <div className="ml-2 w-20">
+                      <Select
+                        options={[...Array(7)].map((_, i) => ({ value: (i + 4).toString(), label: (i + 4).toString() }))}
+                        value={
+                          [...Array(7)].map((_, i) => ({ value: (i + 4).toString(), label: (i + 4).toString() }))
+                            .find(opt => opt.value === filters.numberOfBathrooms) || null
                         }
-                      })}
-                      placeholder=""
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+                        onChange={selected => {
+                          setCustomBathrooms(selected.value);
+                          handleFilterChangeInternal({ numberOfBathrooms: selected.value });
+                        }}
+                        isSearchable={false}
+                        classNamePrefix="custom-select"
+                        styles={{
+                          ...getSelectStyles(filters.numberOfBathrooms),
+                          option: (provided, state) => ({
+                            ...provided,
+                            fontSize: '0.875rem',
+                            color: '#000',
+                            backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
+                            fontWeight: state.isSelected ? 600 : 400,
+                          }),
+                          singleValue: (provided) => ({
+                            ...provided,
+                            fontSize: '0.8rem',
+                            color: '#000',
+                            fontWeight: 600,
+                          }),
+                          control: (provided, state) => ({
+                            ...provided,
+                            height: '2.5rem',
+                            padding: '0 0.25rem',
+                            minWidth: '56px',
+                            backgroundColor: '#fff',
+                            color: '#000',
+                          }),
+                        }}
+                        theme={theme => ({
+                          ...theme,
+                          colors: {
+                            ...theme.colors,
+                            neutral0: '#fff',
+                            primary25: '#fff',
+                            primary: '#FFDC30',
+                            neutral80: '#000',
+                            neutral20: '#ccc',
+                            neutral30: '#ccc',
+                            neutral40: '#ccc',
+                          }
+                        })}
+                        placeholder=""
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div>
           <h3 className="text-md font-medium text-black mb-3">Servicios</h3>
@@ -506,6 +528,31 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
               </button>
             ))}
           </div>
+          {/* Subfiltro de servicios incluidos */}
+          {filters.services === "Con servicios" && (
+            <div className="mt-2">
+              <h4 className="text-sm font-medium text-black mb-2">¿Qué servicios?</h4>
+              <div className="flex flex-col gap-2">
+                {serviciosIncluidosList.map(servicio => (
+                  <label key={servicio} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviciosSeleccionados.includes(servicio)}
+                      onChange={() => {
+                        const updated = serviciosSeleccionados.includes(servicio)
+                          ? serviciosSeleccionados.filter(s => s !== servicio)
+                          : [...serviciosSeleccionados, servicio];
+                        setServiciosSeleccionados(updated);
+                        handleFilterChangeInternal({ includedServices: updated });
+                      }}
+                      className="accent-[#FFDC30] w-4 h-4 rounded"
+                    />
+                    <span className="text-black text-sm">{servicio}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         
         <div>
