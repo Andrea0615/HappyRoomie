@@ -7,6 +7,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
   const [customBathrooms, setCustomBathrooms] = useState('');
   const [customParking, setCustomParking] = useState('');
   const [customRooms, setCustomRooms] = useState('');
+  const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
 
   const propertyTypeOptions = [
     "Casa",
@@ -77,6 +78,16 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
     "Hamaca",
     "Roof-top",
     "Estacionamiento techado"
+  ];
+
+  const serviciosIncluidosList = [
+    "Luz",
+    "Agua",
+    "Gas",
+    "Internet",
+    "Limpieza",
+    "Mantenimiento",
+    "Agua potable"
   ];
 
   const MIN_PRICE = 3500;
@@ -517,6 +528,31 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
               </button>
             ))}
           </div>
+          {/* Subfiltro de servicios incluidos */}
+          {filters.services === "Con servicios" && (
+            <div className="mt-2">
+              <h4 className="text-sm font-medium text-black mb-2">¿Qué servicios?</h4>
+              <div className="flex flex-col gap-2">
+                {serviciosIncluidosList.map(servicio => (
+                  <label key={servicio} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviciosSeleccionados.includes(servicio)}
+                      onChange={() => {
+                        const updated = serviciosSeleccionados.includes(servicio)
+                          ? serviciosSeleccionados.filter(s => s !== servicio)
+                          : [...serviciosSeleccionados, servicio];
+                        setServiciosSeleccionados(updated);
+                        handleFilterChangeInternal({ includedServices: updated });
+                      }}
+                      className="accent-[#FFDC30] w-4 h-4 rounded"
+                    />
+                    <span className="text-black text-sm">{servicio}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         
         <div>

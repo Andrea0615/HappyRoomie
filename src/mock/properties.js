@@ -16,6 +16,7 @@ export const properties = [
       "Hamaca",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Limpieza", "Gas"],
     rating: 4.8,
     isVerified: true,
     isFeatured: true,
@@ -42,6 +43,7 @@ export const properties = [
       "Secadora",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Gas", "Mantenimiento", "Agua potable"],
     bathrooms: 2,
     rating: 4.6,
     isVerified: true,
@@ -67,6 +69,7 @@ export const properties = [
       "Lavadora",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Gas", "Mantenimiento"],
     bathrooms: 1,
     rating: 4.5,
     isVerified: true,
@@ -94,6 +97,7 @@ export const properties = [
       "Actividades deportivas",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Limpieza", "Gas"],
     bathrooms: 2,
     rating: 4.3,
     isVerified: false,
@@ -117,6 +121,7 @@ export const properties = [
       "Jardín",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Limpieza"],
     rating: 4.7,
     isVerified: true,
     isFeatured: true,
@@ -140,6 +145,7 @@ export const properties = [
       "Estacionamiento techado",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Gas", "Mantenimiento", "Agua potable"],
     bathrooms: 1,
     rating: 4.9,
     isVerified: true,
@@ -164,6 +170,7 @@ export const properties = [
       "Actividades deportivas",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Limpieza"],
     rating: 4.2,
     isVerified: true,
     isFeatured: false,
@@ -188,6 +195,7 @@ export const properties = [
       "Secadora",
       "Seguridad 24/7"
     ],
+    includedServices: ["Luz", "Agua", "Internet", "Gas", "Mantenimiento", "Agua potable", "Limpieza"],
     bathrooms: 2,
     rating: 4.8,
     isVerified: true,

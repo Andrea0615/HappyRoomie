@@ -46,17 +46,19 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
       </div>
 
       {/* Galería de imágenes */}
-      <div className="relative h-96 bg-gray-200 mt-4">
-        <img 
-          src={allImages[0]} 
-          alt={title} 
-          className="w-full h-full object-cover"
-        />
-        {isVerified && (
-          <div className="absolute top-4 left-4 bg-[#FFDC30] text-black text-sm font-bold px-3 py-1 rounded-md">
-            Disponible
-          </div>
-        )}
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="relative w-full h-[420px] bg-gray-200 mt-6 rounded-2xl shadow-xl overflow-hidden">
+          <img 
+            src={allImages[0]} 
+            alt={title} 
+            className="w-full h-full object-cover rounded-2xl"
+          />
+          {isVerified && (
+            <div className="absolute top-4 left-4 bg-[#FFDC30] text-black text-sm font-bold px-3 py-1 rounded-md shadow">
+              Disponible
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Contenido principal */}
@@ -127,6 +129,21 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
             <p className="text-black font-medium">{petFriendly ? "Sí" : "No"}</p>
           </div>
         </div>
+        
+        {/* Servicios incluidos detallados */}
+        {property.includedServices && property.includedServices.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold text-black mb-2">Servicios incluidos</h2>
+            <ul className="flex flex-col gap-2">
+              {property.includedServices.map(servicio => (
+                <li key={servicio} className="flex items-center bg-white text-black px-3 py-2 rounded-md text-base font-medium shadow border border-gray-200">
+                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  {servicio}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         
         {/* Amenidades */}
         <div className="mt-6">
