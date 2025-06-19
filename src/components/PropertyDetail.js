@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
   const { 
@@ -17,6 +17,8 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
     owner
   } = property;
 
+  const [currentImage, setCurrentImage] = useState(0);
+
   // Si no hay imágenes adicionales, usar la imagen principal
   const allImages = images ? [image, ...images] : [image];
   
@@ -29,6 +31,12 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
   const hasServices = features.includes("Servicios incluidos");
   const bathroomType = features.includes("Baño privado") ? "Propio" : "Compartido";
   const genderType = features.find(f => ["Solo hombres", "Solo mujeres", "Mixto"].includes(f)) || "No especificado";
+
+  // Formatear precios y cantidades con coma
+  const formatPrice = (value) => {
+    if (typeof value !== 'number') return value;
+    return value.toLocaleString('en-US');
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -47,18 +55,55 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
 
       {/* Galería de imágenes */}
       <div className="max-w-4xl mx-auto px-6">
-        <div className="relative w-full h-[420px] bg-gray-200 mt-6 rounded-2xl shadow-xl overflow-hidden">
-          <img 
-            src={allImages[0]} 
-            alt={title} 
-            className="w-full h-full object-cover rounded-2xl"
-          />
-          {isVerified && (
-            <div className="absolute top-4 left-4 bg-[#FFDC30] text-black text-sm font-bold px-3 py-1 rounded-md shadow">
-              Disponible
+        {(type === "Casa" || type === "Departamento") && allImages.length > 1 ? (
+          <div className="relative w-full h-[420px] bg-gray-200 mt-6 rounded-2xl shadow-xl overflow-hidden flex items-center justify-center">
+            <button
+              onClick={() => setCurrentImage((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#FFDC30] transition z-10"
+              aria-label="Imagen anterior"
+            >
+              <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <img
+              src={allImages[currentImage]}
+              alt={title}
+              className="w-full h-full object-cover rounded-2xl"
+            />
+            <button
+              onClick={() => setCurrentImage((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#FFDC30] transition z-10"
+              aria-label="Imagen siguiente"
+            >
+              <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </button>
+            {/* Indicadores de imagen */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {allImages.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`w-3 h-3 rounded-full border-2 transition-all duration-200 ${
+                    idx === currentImage
+                      ? 'bg-[#FFDC30] border-black'
+                      : 'bg-black/40 border-black/70'
+                  }`}
+                />
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="relative w-full h-[420px] bg-gray-200 mt-6 rounded-2xl shadow-xl overflow-hidden">
+            <img
+              src={allImages[0]}
+              alt={title}
+              className="w-full h-full object-cover rounded-2xl"
+            />
+            {isVerified && (
+              <div className="absolute top-4 left-4 bg-[#FFDC30] text-black text-sm font-bold px-3 py-1 rounded-md shadow">
+                Disponible
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       {/* Contenido principal */}
@@ -77,7 +122,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
         
         <div className="mt-4 flex items-center justify-between">
           <div>
-            <span className="text-3xl font-bold text-black">${price}</span>
+            <span className="text-3xl font-bold text-black">${formatPrice(price)}</span>
             <span className="text-gray-600"> /mes</span>
           </div>
           <span className="px-3 py-1 bg-gray-100 text-black rounded-md">
@@ -115,7 +160,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
               {type === "Cuarto" ? "Baño" : "Baños"}
             </h3>
             <p className="text-black font-medium">
-              {type === "Cuarto" ? bathroomType : `${bathrooms || 1}`}
+              {type === "Cuarto" ? bathroomType : `${formatPrice(bathrooms || 1)}`}
             </p>
           </div>
           
@@ -142,6 +187,16 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+        {/* Seguridad */}
+        {property.securityType && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold text-black mb-2">Seguridad</h2>
+            <div className="flex items-center bg-white text-black px-3 py-2 rounded-md text-base font-medium shadow border border-gray-200">
+              <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2-.896 2-2 2-2-.896-2-2zm0 0V7m0 4v4m0 0h4m-4 0H8" /></svg>
+              {property.securityType}
+            </div>
           </div>
         )}
         

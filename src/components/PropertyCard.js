@@ -16,7 +16,8 @@ const PropertyCard = ({ property, onViewDetails, onCompareToggle, isComparing })
 
   // Formatea el precio para mostrar comas como separadores de miles
   const formatPrice = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (typeof value !== 'number') return value;
+    return value.toLocaleString('en-US');
   };
 
   // Función para capitalizar solo la primera letra de la primera palabra
@@ -78,7 +79,7 @@ const PropertyCard = ({ property, onViewDetails, onCompareToggle, isComparing })
           )}
           {(type === "Casa" || type === "Departamento") && bathrooms && (
             <span className="inline-block bg-gray-100 text-black text-xs px-2 py-1 rounded">
-              {bathrooms === 1 ? "1 baño" : `${bathrooms} baños`}
+              {bathrooms === 1 ? "1 baño" : `${formatPrice(bathrooms)} baños`}
             </span>
           )}
         </div>
