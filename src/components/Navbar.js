@@ -40,8 +40,11 @@ const Navbar = ({ currentPage, onNavigate }) => {
               Buscar propiedades
             </a>
             <a href="#" className="px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
-            <button className="ml-4 px-4 py-2 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
-              Iniciar Sesión
+            <button 
+              onClick={() => onNavigate('dashboard')}
+              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+            >
+              Mi Perfil
             </button>
             <button className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
               Registrarse
@@ -95,8 +98,14 @@ const Navbar = ({ currentPage, onNavigate }) => {
               Buscar propiedades
             </a>
             <a href="#" className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
-            <button className="mt-2 w-full px-4 py-2 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
-              Iniciar Sesión
+            <button 
+              onClick={() => {
+                onNavigate('dashboard');
+                setIsMenuOpen(false);
+              }}
+              className={`w-full text-left px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+            >
+              Mi Perfil
             </button>
             <button className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
               Registrarse

@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import SearchPage from './components/SearchPage';
 import PropertyDetail from './components/PropertyDetail';
 import PropertyComparator from './components/PropertyComparator'; // Importar el comparador
+import UserDashboard from './components/UserDashboard'; // Importar el dashboard
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -61,6 +62,8 @@ const App = () => {
           <PropertyDetail property={selectedProperty} onBack={() => handleNavigate('search', null, searchFilters)} />
         ) : currentPage === 'comparePage' && propertiesToCompare.length > 0 ? (
           <PropertyComparator propertiesToCompare={propertiesToCompare} onBack={() => handleNavigate('search', null, searchFilters)} />
+        ) : currentPage === 'dashboard' ? (
+          <UserDashboard onBack={() => handleNavigate('home')} />
         ) : null}
       </main>
       
