@@ -11,14 +11,16 @@ import SearchPage from './components/SearchPage';
 import PropertyDetail from './components/PropertyDetail';
 import PropertyComparator from './components/PropertyComparator'; // Importar el comparador
 import UserDashboard from './components/UserDashboard'; // Importar el dashboard
+import PropertyOwnerRegistration from './components/PropertyOwnerRegistration'; // Importar el registro de propietarios
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [searchFilters, setSearchFilters] = useState(null); // Estado para guardar los filtros
   const [propertiesToCompare, setPropertiesToCompare] = useState([]); // Estado para propiedades a comparar
+  const [registrationType, setRegistrationType] = useState(null); // Estado para el tipo de registro
 
-  const handleNavigate = (page, data = null, filters = null) => {
+  const handleNavigate = (page, data = null, filters = null, registrationType = null) => {
     setCurrentPage(page);
     if (page === 'propertyDetail') {
       setSelectedProperty(data);
@@ -32,6 +34,9 @@ const App = () => {
     }
     if (filters) {
       setSearchFilters(filters); // Guardar los filtros cuando se navega desde SearchPage
+    }
+    if (registrationType) {
+      setRegistrationType(registrationType);
     }
     window.scrollTo(0, 0);
   };
@@ -54,7 +59,7 @@ const App = () => {
             <FeaturedProperties />
             <HowItWorks />
             <Testimonials />
-            <CallToAction />
+            <CallToAction onNavigate={handleNavigate} />
           </>
         ) : currentPage === 'search' ? (
           <SearchPage onNavigate={handleNavigate} initialFilters={searchFilters} />
@@ -64,6 +69,8 @@ const App = () => {
           <PropertyComparator propertiesToCompare={propertiesToCompare} onBack={() => handleNavigate('search', null, searchFilters)} />
         ) : currentPage === 'dashboard' ? (
           <UserDashboard onBack={() => handleNavigate('home')} />
+        ) : currentPage === 'propertyOwnerRegistration' ? (
+          <PropertyOwnerRegistration onBack={() => handleNavigate('home')} />
         ) : null}
       </main>
       

@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
+import RegistrationModal from './RegistrationModal';
 
 const Navbar = ({ currentPage, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleRegistrationClick = () => {
+    setIsRegistrationModalOpen(true);
+    setIsMenuOpen(false); // Close mobile menu if open
+  };
+
+  const handleRegistrationOption = (option) => {
+    setIsRegistrationModalOpen(false);
+    if (option === 'estudiante') {
+      onNavigate('dashboard'); // Navigate to student registration form
+    } else if (option === 'rentar') {
+      // Navigate to property owner registration form
+      onNavigate('propertyOwnerRegistration', null, null, 'propertyOwner');
+    }
   };
 
   return (
@@ -46,7 +63,10 @@ const Navbar = ({ currentPage, onNavigate }) => {
             >
               Mi Perfil
             </button>
-            <button className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
+            <button 
+              onClick={handleRegistrationClick}
+              className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+            >
               Registrarse
             </button>
           </div>
@@ -107,12 +127,21 @@ const Navbar = ({ currentPage, onNavigate }) => {
             >
               Mi Perfil
             </button>
-            <button className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
+            <button 
+              onClick={handleRegistrationClick}
+              className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+            >
               Registrarse
             </button>
           </div>
         </div>
       )}
+      
+      <RegistrationModal 
+        isOpen={isRegistrationModalOpen}
+        onClose={() => setIsRegistrationModalOpen(false)}
+        onOptionSelect={handleRegistrationOption}
+      />
     </nav>
   );
 };
