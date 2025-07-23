@@ -4,7 +4,16 @@
           "./src/**/*.{js,jsx,ts,tsx}",
         ],
         theme: {
-          extend: {},
+          extend: {
+            colors: {
+              yellow: {
+                DEFAULT: '#ffd662',
+              },
+              navy: {
+                DEFAULT: '#0a2a5c',
+              },
+            },
+          },
         },
         plugins: [],
       }

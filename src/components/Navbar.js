@@ -34,9 +34,9 @@ const Navbar = ({ currentPage, onNavigate }) => {
               onClick={() => onNavigate('home')}
             >
               <img
-                className="h-16 w-auto" // Ajusta el tamaño según sea necesario
-                src="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0xBU97eawB9QM6ZyvCAYlu4dSEThWpbaxnVFO" // Nuevo logo PNG
-                alt="Happy Rommie Logo"
+                className="h-16 w-auto"
+                src="/125 sin título_20250717140421.png"
+                alt="Liviko Logo"
               />
             </div>
           </div>
@@ -45,21 +45,21 @@ const Navbar = ({ currentPage, onNavigate }) => {
             <a 
               href="#" 
               onClick={() => onNavigate('home')}
-              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
             >
               Inicio
             </a>
             <a 
               href="#" 
               onClick={() => onNavigate('search')}
-              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
             >
               Buscar propiedades
             </a>
-            <a href="#" className="px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <a href="#" className="px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
             <button 
               onClick={() => onNavigate('dashboard')}
-              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
             >
               Mi Perfil
             </button>
@@ -103,7 +103,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
                 onNavigate('home');
                 setIsMenuOpen(false);
               }}
-              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
+              className={`block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
             >
               Inicio
             </a>
@@ -113,17 +113,17 @@ const Navbar = ({ currentPage, onNavigate }) => {
                 onNavigate('search');
                 setIsMenuOpen(false);
               }}
-              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
+              className={`block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
             >
               Buscar propiedades
             </a>
-            <a href="#" className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <a href="#" className="block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
             <button 
               onClick={() => {
                 onNavigate('dashboard');
                 setIsMenuOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+              className={`w-full text-left px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
             >
               Mi Perfil
             </button>

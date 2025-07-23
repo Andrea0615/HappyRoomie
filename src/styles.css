@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 .custom-select__control {
-  background-color: #FFDC30 !important;
-  color: #000 !important;
+  background-color: #ffd662 !important;
+  color: #0a2a5c !important;
   border-radius: 0.375rem !important;
   min-height: 36px !important;
   font-weight: 600 !important;
 }
 
 .custom-select__single-value {
-  color: #000 !important;
+  color: #0a2a5c !important;
   font-weight: 600 !important;
 }

@@ -6,12 +6,12 @@ const PropertyOwnerFooter = () => {
   };
 
   return (
-    <footer className="bg-black text-white py-10 px-4 font-['Poppins']">
+    <footer className="bg-[#0a2a5c] text-white py-10 px-4 font-['Poppins']">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Columna 1: Logo y descripción */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <div className="mb-3">
-            <img src="/logo-happy-roomie.png" alt="Happy Roomie Logo" className="h-12" />
+            <img src="/liviko-logo.png" alt="Liviko Logo" className="h-12" />
           </div>
           <p className="text-gray-300 text-sm leading-relaxed font-['Poppins']">
             La plataforma exclusiva para estudiantes del Tec de Monterrey que buscan el lugar perfecto para vivir y los compañeros ideales.
