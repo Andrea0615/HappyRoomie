@@ -36,12 +36,12 @@ const RoomBlock = ({
         <div className="flex gap-4">
           <button
             type="button"
-            className={`px-4 py-2 rounded-lg border-2 font-medium ${data.amueblada === true ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'}`}
+            className={`px-4 py-2 rounded-lg border-2 font-medium ${data.amueblada === true ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'}`}
             onClick={() => handleField('amueblada', true)}
           >Sí</button>
           <button
             type="button"
-            className={`px-4 py-2 rounded-lg border-2 font-medium ${data.amueblada === false ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'}`}
+            className={`px-4 py-2 rounded-lg border-2 font-medium ${data.amueblada === false ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'}`}
             onClick={() => handleField('amueblada', false)}
           >No</button>
         </div>

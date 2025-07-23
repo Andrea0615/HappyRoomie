@@ -21,7 +21,7 @@ const PropertyOwnerPhotoUploader = ({ onPhotoChange }) => {
         Foto de perfil
       </label>
       <div className="flex items-center space-x-4">
-        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#FFDC30] shadow-md">
+        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#ffd662] shadow-md">
           {preview ? (
             <img src={preview} alt="Vista previa" className="w-full h-full object-cover" />
           ) : (
@@ -31,7 +31,7 @@ const PropertyOwnerPhotoUploader = ({ onPhotoChange }) => {
           )}
         </div>
         <div>
-          <label className="bg-[#FFDC30] hover:bg-[#e6c52b] text-black font-medium py-2 px-4 rounded cursor-pointer transition-colors font-['Poppins'] shadow-sm">
+          <label className="bg-[#ffd662] hover:bg-[#e6c52b] text-black font-medium py-2 px-4 rounded cursor-pointer transition-colors font-['Poppins'] shadow-sm">
             Subir foto
             <input 
               type="file" 

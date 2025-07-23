@@ -35,8 +35,8 @@ const Navbar = ({ currentPage, onNavigate }) => {
             >
               <img
                 className="h-16 w-auto" // Ajusta el tamaño según sea necesario
-                src="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0xBU97eawB9QM6ZyvCAYlu4dSEThWpbaxnVFO" // Nuevo logo PNG
-                alt="Happy Rommie Logo"
+                src="/liviko-logo.png" // Nuevo logo Liviko
+                alt="Liviko Logo"
               />
             </div>
           </div>
@@ -65,7 +65,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
             </button>
             <button 
               onClick={handleRegistrationClick}
-              className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+              className="px-4 py-2 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
             >
               Registrarse
             </button>
@@ -129,7 +129,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
             </button>
             <button 
               onClick={handleRegistrationClick}
-              className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+              className="mt-2 w-full px-4 py-2 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
             >
               Registrarse
             </button>

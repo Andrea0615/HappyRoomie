@@ -29,11 +29,11 @@ const Testimonials = () => {
                 <img 
                   src={testimonials[currentIndex].avatar} 
                   alt={testimonials[currentIndex].name} 
-                  className="w-24 h-24 rounded-full object-cover border-4 border-[#FFDC30]"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-[#ffd662]"
                 />
               </div>
               <div>
-                <div className="text-[#FFDC30] mb-4">
+                <div className="text-[#ffd662] mb-4">
                   {[...Array(5)].map((_, i) => (
                     <svg 
                       key={i} 
@@ -57,7 +57,7 @@ const Testimonials = () => {
           <div className="flex justify-center mt-8 space-x-4">
             <button 
               onClick={prevTestimonial}
-              className="p-2 rounded-full bg-[#FFDC30] text-black hover:bg-yellow-400 transition duration-300"
+              className="p-2 rounded-full bg-[#ffd662] text-black hover:bg-yellow-400 transition duration-300"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -65,7 +65,7 @@ const Testimonials = () => {
             </button>
             <button 
               onClick={nextTestimonial}
-              className="p-2 rounded-full bg-[#FFDC30] text-black hover:bg-yellow-400 transition duration-300"
+              className="p-2 rounded-full bg-[#ffd662] text-black hover:bg-yellow-400 transition duration-300"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

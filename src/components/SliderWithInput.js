@@ -54,7 +54,7 @@ const SliderWithInput = ({
         step={step}
         value={inputValue >= min ? Math.round(inputValue / step) * step : min}
         onChange={handleSliderChange}
-        className="w-full accent-[#FFDC30]"
+        className="w-full accent-[#ffd662]"
       />
       <div className="flex justify-between text-xs text-gray-500 mt-1">
         <span>{currency ? `$${min.toLocaleString()}` : `${min}${unit}`}</span>

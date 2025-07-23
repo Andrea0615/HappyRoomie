@@ -17,7 +17,7 @@ const SearchMap = ({ properties }) => {
           <div className="mt-6 grid grid-cols-2 gap-4 w-full max-w-md">
             {properties.slice(0, 4).map(property => (
               <div key={property.id} className="bg-white p-3 rounded-md shadow-sm flex items-center">
-                <div className="w-10 h-10 bg-[#FFDC30] rounded-full flex items-center justify-center text-black font-bold mr-3">
+                <div className="w-10 h-10 bg-[#ffd662] rounded-full flex items-center justify-center text-black font-bold mr-3">
                   {property.id}
                 </div>
                 <div className="overflow-hidden">

@@ -101,7 +101,7 @@ const PropertyOwnerRegistration = ({ onBack }) => {
   if (currentView === 'propertyRegistered') {
     return (
       <div className="min-h-screen flex flex-col bg-white font-['Poppins']">
-        <div className="w-full bg-[#FFDC30] py-6 px-4 shadow-md">
+        <div className="w-full bg-[#ffd662] py-6 px-4 shadow-md">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-black font-['Poppins']">¡Propiedad Registrada!</h1>
             <p className="text-black mt-2 font-['Poppins']">
@@ -113,7 +113,7 @@ const PropertyOwnerRegistration = ({ onBack }) => {
         <main className="flex-grow max-w-4xl mx-auto py-12 px-4">
           <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-100">
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-[#FFDC30] rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 bg-[#ffd662] rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -125,13 +125,13 @@ const PropertyOwnerRegistration = ({ onBack }) => {
               <div className="space-y-3">
                 <button 
                   onClick={() => setCurrentView('profile')}
-                  className="bg-[#FFDC30] hover:bg-[#e6c52b] text-black font-medium py-3 px-6 rounded-lg transition-colors font-['Poppins'] mr-3"
+                  className="bg-[#ffd662] hover:bg-[#e6c52b] text-black font-medium py-3 px-6 rounded-lg transition-colors font-['Poppins'] mr-3"
                 >
                   Registrar otra propiedad
                 </button>
                 <button 
                   onClick={onBack}
-                  className="border-2 border-[#FFDC30] text-black font-medium py-3 px-6 rounded-lg hover:bg-yellow-50 transition-colors font-['Poppins']"
+                  className="border-2 border-[#ffd662] text-black font-medium py-3 px-6 rounded-lg hover:bg-yellow-50 transition-colors font-['Poppins']"
                 >
                   Volver al inicio
                 </button>
@@ -185,7 +185,7 @@ const PropertyOwnerRegistration = ({ onBack }) => {
                 type="submit"
                 disabled={!isFormValid || isSubmitting}
                 className={`
-                  ${isFormValid ? 'bg-[#FFDC30] hover:bg-[#e6c52b]' : 'bg-gray-200 cursor-not-allowed'} 
+                  ${isFormValid ? 'bg-[#ffd662] hover:bg-[#e6c52b]' : 'bg-gray-200 cursor-not-allowed'} 
                   text-black font-bold py-3 px-8 rounded-lg transition-colors flex items-center font-['Poppins']
                 `}
               >
@@ -202,7 +202,7 @@ const PropertyOwnerRegistration = ({ onBack }) => {
               <button 
                 type="button"
                 onClick={onBack}
-                className="border-2 border-[#FFDC30] text-black font-medium py-3 px-6 rounded-lg hover:bg-yellow-50 transition-colors font-['Poppins']"
+                className="border-2 border-[#ffd662] text-black font-medium py-3 px-6 rounded-lg hover:bg-yellow-50 transition-colors font-['Poppins']"
               >
                 Cancelar
               </button>

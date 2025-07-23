@@ -8,7 +8,7 @@ const PropertyComparator = ({ propertiesToCompare, onBack }) => {
         <p className="text-gray-600 mb-8">Selecciona al menos una propiedad para ver la comparación.</p>
         <button 
           onClick={onBack}
-          className="px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300"
+          className="px-6 py-3 bg-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300"
         >
           Volver al buscador
         </button>

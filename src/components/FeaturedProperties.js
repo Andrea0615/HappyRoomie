@@ -23,7 +23,7 @@ const FeaturedProperties = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <button className="px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
+          <button className="px-6 py-3 bg-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
             Ver todas las propiedades
           </button>
         </div>

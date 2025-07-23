@@ -16,7 +16,7 @@ const MultiSelect = ({ options, value = [], onChange, withImages = false }) => {
           key={opt.value}
           type="button"
           className={`flex items-center border-2 rounded-lg px-4 py-2 transition-all duration-200 shadow-sm hover:shadow-lg focus:outline-none ${
-            value.includes(opt.value) ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'
+            value.includes(opt.value) ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'
           }`}
           onClick={() => handleToggle(opt)}
         >

@@ -27,7 +27,7 @@ const PropertyOwnerIdUploader = ({ onDocumentChange }) => {
                 {fileName || 'Ningún archivo seleccionado'}
               </span>
             </div>
-            <label className="bg-[#FFDC30] hover:bg-[#e6c52b] text-black font-medium py-2 px-4 rounded cursor-pointer transition-colors font-['Poppins'] shadow-sm">
+            <label className="bg-[#ffd662] hover:bg-[#e6c52b] text-black font-medium py-2 px-4 rounded cursor-pointer transition-colors font-['Poppins'] shadow-sm">
               Subir ID
               <input 
                 type="file" 

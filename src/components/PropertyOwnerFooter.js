@@ -20,7 +20,7 @@ const PropertyOwnerFooter = () => {
 
         {/* Columna 2: Enlaces Rápidos */}
         <div className="text-center md:text-left">
-          <h3 className="text-lg font-bold text-[#FFDC30] mb-4 font-['Poppins']">Enlaces Rápidos</h3>
+          <h3 className="text-lg font-bold text-[#ffd662] mb-4 font-['Poppins']">Enlaces Rápidos</h3>
           <ul className="space-y-2">
             <li>
               <button 
@@ -59,7 +59,7 @@ const PropertyOwnerFooter = () => {
 
         {/* Columna 3: Contáctanos */}
         <div className="text-center md:text-left">
-          <h3 className="text-lg font-bold text-[#FFDC30] mb-4 font-['Poppins']">Contáctanos</h3>
+          <h3 className="text-lg font-bold text-[#ffd662] mb-4 font-['Poppins']">Contáctanos</h3>
           <p className="text-gray-300 text-sm mb-2 font-['Poppins']">
             Email: <a href="mailto:happyroomiemx@gmail.com" className="hover:text-white transition-colors">happyroomiemx@gmail.com</a>
           </p>

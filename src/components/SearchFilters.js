@@ -245,10 +245,10 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
       minHeight: '36px',
       borderRadius: '0.375rem',
       borderColor: '#D1D5DB',
-      boxShadow: state.isFocused ? '0 0 0 1px #FFDC30' : base.boxShadow,
-      '&:hover': { borderColor: '#FFDC30' },
-      backgroundColor: '#FFDC30 !important', // Forzar amarillo con !important
-      background: '#FFDC30 !important',
+      boxShadow: state.isFocused ? '0 0 0 1px #ffd662' : base.boxShadow,
+      '&:hover': { borderColor: '#ffd662' },
+      backgroundColor: '#ffd662 !important', // Forzar amarillo con !important
+      background: '#ffd662 !important',
       color: '#000',
       transition: 'background-color 0.2s',
     }),
@@ -285,7 +285,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handlePropertyTypeSelect(type)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.propertyType === type 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-black font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -305,7 +305,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleGenderSelect(gender)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.gender === gender 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-black font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -325,7 +325,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleFurnishedSelect(option)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.furnished === option 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-black font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -346,7 +346,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                   onClick={() => handleBathroomTypeSelect(option)}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     filters.bathroomType === option 
-                      ? 'bg-[#FFDC30] text-black font-medium' 
+                      ? 'bg-[#ffd662] text-black font-medium' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -369,7 +369,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfRoomsSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfRooms === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-black font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -395,7 +395,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...provided,
                             fontSize: '0.875rem',
                             color: '#000',
-                            backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
+                            backgroundColor: state.isSelected ? '#ffd662' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
@@ -419,7 +419,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...theme.colors,
                             neutral0: '#fff',
                             primary25: '#fff',
-                            primary: '#FFDC30',
+                            primary: '#ffd662',
                             neutral80: '#000',
                             neutral20: '#ccc',
                             neutral30: '#ccc',
@@ -448,7 +448,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfBathroomsSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfBathrooms === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-black font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -474,7 +474,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...provided,
                             fontSize: '0.875rem',
                             color: '#000',
-                            backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
+                            backgroundColor: state.isSelected ? '#ffd662' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
@@ -498,7 +498,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...theme.colors,
                             neutral0: '#fff',
                             primary25: '#fff',
-                            primary: '#FFDC30',
+                            primary: '#ffd662',
                             neutral80: '#000',
                             neutral20: '#ccc',
                             neutral30: '#ccc',
@@ -525,7 +525,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleServicesSelect(option)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.services === option 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-black font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -550,7 +550,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                         setServiciosSeleccionados(updated);
                         handleFilterChangeInternal({ includedServices: updated });
                       }}
-                      className="accent-[#FFDC30] w-4 h-4 rounded"
+                      className="accent-[#ffd662] w-4 h-4 rounded"
                     />
                     <span className="text-black text-sm">{servicio}</span>
                   </label>
@@ -578,7 +578,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
             step={STEP}
             value={filters.maxBudget}
             onChange={handleBudgetChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#FFDC30]"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#ffd662]"
           />
           <div className="flex justify-between text-xs text-gray-600 mt-1">
             <span>${formatPrice(MIN_PRICE)}</span>
@@ -598,7 +598,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                   onClick={() => handleParkingSelect(option)}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     filters.parking === option 
-                      ? 'bg-[#FFDC30] text-black font-medium' 
+                      ? 'bg-[#ffd662] text-black font-medium' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -620,7 +620,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfParkingSpacesSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfParkingSpaces === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-black font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -646,7 +646,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...provided,
                             fontSize: '0.875rem',
                             color: '#000',
-                            backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
+                            backgroundColor: state.isSelected ? '#ffd662' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
@@ -670,7 +670,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             ...theme.colors,
                             neutral0: '#fff',
                             primary25: '#fff',
-                            primary: '#FFDC30',
+                            primary: '#ffd662',
                             neutral80: '#000',
                             neutral20: '#ccc',
                             neutral30: '#ccc',
@@ -694,7 +694,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
             name="petFriendly"
             checked={filters.petFriendly}
             onChange={handlePetFriendlyChange}
-            className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded"
+            className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded"
           />
           <label htmlFor="petFriendly" className="ml-2 block text-sm text-black">
             Pet Friendly
@@ -732,7 +732,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     type="checkbox"
                     checked={filters.amenities.includes(amenity)}
                     onChange={handleAmenityChange}
-                    className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded"
+                    className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded"
                   />
                   <label htmlFor={`amenity-${amenity}`} className="ml-2 block text-sm text-gray-600">
                     {amenity}
@@ -751,7 +751,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleFilterChangeInternal({ securityType: filters.securityType === option ? '' : option })}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.securityType === option
-                        ? 'bg-[#FFDC30] text-black font-medium'
+                        ? 'bg-[#ffd662] text-black font-medium'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >

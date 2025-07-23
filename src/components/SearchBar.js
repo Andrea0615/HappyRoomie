@@ -36,7 +36,7 @@ const SearchBar = () => {
                 name="location"
                 value={searchParams.location}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662]"
               >
                 <option value="">Selecciona campus</option>
                 <option value="monterrey">Campus Monterrey</option>
@@ -56,7 +56,7 @@ const SearchBar = () => {
                 name="propertyType"
                 value={searchParams.propertyType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662]"
               >
                 <option value="">Cualquier tipo</option>
                 <option value="room">Habitación</option>
@@ -75,7 +75,7 @@ const SearchBar = () => {
                 name="priceRange"
                 value={searchParams.priceRange}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662]"
               >
                 <option value="">Cualquier precio</option>
                 <option value="0-3000">$0 - $3,000</option>
@@ -89,7 +89,7 @@ const SearchBar = () => {
             <div className="flex items-end">
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300"
+                className="w-full px-4 py-2 bg-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300"
               >
                 Buscar
               </button>
@@ -103,7 +103,7 @@ const SearchBar = () => {
               name="roommates"
               checked={searchParams.roommates}
               onChange={handleChange}
-              className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded"
+              className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded"
             />
             <label htmlFor="roommates" className="ml-2 block text-sm text-black">
               Busco también roomies compatibles

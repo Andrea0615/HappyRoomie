@@ -59,7 +59,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
           <div className="relative w-full h-[420px] bg-gray-200 mt-6 rounded-2xl shadow-xl overflow-hidden flex items-center justify-center">
             <button
               onClick={() => setCurrentImage((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#FFDC30] transition z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#ffd662] transition z-10"
               aria-label="Imagen anterior"
             >
               <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -71,7 +71,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
             />
             <button
               onClick={() => setCurrentImage((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#FFDC30] transition z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-2 shadow hover:bg-[#ffd662] transition z-10"
               aria-label="Imagen siguiente"
             >
               <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
@@ -83,7 +83,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
                   key={idx}
                   className={`w-3 h-3 rounded-full border-2 transition-all duration-200 ${
                     idx === currentImage
-                      ? 'bg-[#FFDC30] border-black'
+                      ? 'bg-[#ffd662] border-black'
                       : 'bg-black/40 border-black/70'
                   }`}
                 />
@@ -98,7 +98,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
               className="w-full h-full object-cover rounded-2xl"
             />
             {isVerified && (
-              <div className="absolute top-4 left-4 bg-[#FFDC30] text-black text-sm font-bold px-3 py-1 rounded-md shadow">
+              <div className="absolute top-4 left-4 bg-[#ffd662] text-black text-sm font-bold px-3 py-1 rounded-md shadow">
                 Disponible
               </div>
             )}
@@ -110,7 +110,7 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex justify-between items-start">
           <h1 className="text-3xl font-bold text-black">{title}</h1>
-          <div className="flex items-center bg-[#FFDC30] px-3 py-1 rounded-md">
+          <div className="flex items-center bg-[#ffd662] px-3 py-1 rounded-md">
             <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
@@ -233,10 +233,10 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
         
         {/* Botones de acción */}
         <div className="mt-8 flex flex-col sm:flex-row gap-4">
-          <button className="flex-1 px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
+          <button className="flex-1 px-6 py-3 bg-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
             Contactar al propietario
           </button>
-          <button className="flex-1 px-6 py-3 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
+          <button className="flex-1 px-6 py-3 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
             Agendar visita
           </button>
         </div>

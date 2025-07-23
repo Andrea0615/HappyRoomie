@@ -199,12 +199,12 @@ const PropertyQuestionnaire = ({ onComplete, onBackToProfile }) => {
                 <div className="flex gap-4 justify-center">
                   <button
                     type="button"
-                    className={`px-6 py-2 rounded-lg border-2 font-medium ${answers.incluyeServicios === true ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'}`}
+                    className={`px-6 py-2 rounded-lg border-2 font-medium ${answers.incluyeServicios === true ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'}`}
                     onClick={() => setAnswers((a) => ({ ...a, incluyeServicios: true }))}
                   >Sí</button>
                   <button
                     type="button"
-                    className={`px-6 py-2 rounded-lg border-2 font-medium ${answers.incluyeServicios === false ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'}`}
+                    className={`px-6 py-2 rounded-lg border-2 font-medium ${answers.incluyeServicios === false ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'}`}
                     onClick={() => setAnswers((a) => ({ ...a, incluyeServicios: false }))}
                   >No</button>
                 </div>
@@ -282,7 +282,7 @@ const PropertyQuestionnaire = ({ onComplete, onBackToProfile }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-['Poppins']">
-      <div className="w-full bg-[#FFDC30] py-6 px-4 shadow-md">
+      <div className="w-full bg-[#ffd662] py-6 px-4 shadow-md">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-black font-['Poppins']">Registra tu propiedad</h1>
         </div>
@@ -308,7 +308,7 @@ const PropertyQuestionnaire = ({ onComplete, onBackToProfile }) => {
               disabled={!currentStep.canContinue}
               className={`px-6 py-3 rounded-lg font-medium transition-colors font-['Poppins'] ${
                 currentStep.canContinue
-                  ? 'bg-[#FFDC30] text-black hover:bg-[#e6c52b]'
+                  ? 'bg-[#ffd662] text-black hover:bg-[#e6c52b]'
                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
               }`}
             >

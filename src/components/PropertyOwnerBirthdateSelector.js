@@ -46,7 +46,7 @@ const PropertyOwnerBirthdateSelector = ({ onBirthdateChange, onAgeChange }) => {
           <select 
             value={day}
             onChange={(e) => setDay(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#FFDC30] focus:border-[#FFDC30] block w-20 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
+            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#ffd662] focus:border-[#ffd662] block w-20 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
           >
             <option value="">Día</option>
             {days.map(d => (
@@ -57,7 +57,7 @@ const PropertyOwnerBirthdateSelector = ({ onBirthdateChange, onAgeChange }) => {
           <select 
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#FFDC30] focus:border-[#FFDC30] block w-32 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
+            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#ffd662] focus:border-[#ffd662] block w-32 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
           >
             <option value="">Mes</option>
             {months.map(m => (
@@ -68,7 +68,7 @@ const PropertyOwnerBirthdateSelector = ({ onBirthdateChange, onAgeChange }) => {
           <select 
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#FFDC30] focus:border-[#FFDC30] block w-28 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
+            className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-[#ffd662] focus:border-[#ffd662] block w-28 p-2.5 shadow-sm transition-all duration-200 hover:border-gray-400 font-['Poppins']"
           >
             <option value="">Año</option>
             {years.map(y => (
@@ -78,7 +78,7 @@ const PropertyOwnerBirthdateSelector = ({ onBirthdateChange, onAgeChange }) => {
         </div>
         
         {age !== null && (
-          <div className="flex items-center bg-[#FFDC30] px-3 py-1 rounded-full shadow-sm">
+          <div className="flex items-center bg-[#ffd662] px-3 py-1 rounded-full shadow-sm">
             <span className="text-black font-medium font-['Poppins']">{age} años</span>
           </div>
         )}

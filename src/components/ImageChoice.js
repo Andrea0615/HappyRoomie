@@ -7,7 +7,7 @@ const ImageChoice = ({ options, value, onChange, name }) => (
         key={opt.value}
         type="button"
         className={`flex flex-col items-center border-2 rounded-lg p-4 w-36 h-40 transition-all duration-200 shadow-sm hover:shadow-lg focus:outline-none ${
-          value === opt.value ? 'border-[#FFDC30] bg-yellow-50' : 'border-gray-200 bg-white'
+          value === opt.value ? 'border-[#ffd662] bg-yellow-50' : 'border-gray-200 bg-white'
         }`}
         onClick={() => onChange(opt.value)}
         name={name}
