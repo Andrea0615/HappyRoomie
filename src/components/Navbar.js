@@ -17,7 +17,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
   const handleRegistrationOption = (option) => {
     setIsRegistrationModalOpen(false);
     if (option === 'estudiante') {
-      onNavigate('dashboard'); // Navigate to student registration form
+      onNavigate('dashboard', null, null, null, true); // Indica que viene de registro
     } else if (option === 'rentar') {
       // Navigate to property owner registration form
       onNavigate('propertyOwnerRegistration', null, null, 'propertyOwner');

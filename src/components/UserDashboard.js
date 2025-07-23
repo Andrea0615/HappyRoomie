@@ -30,7 +30,7 @@ const BuildingIcon = (props) => (
   </svg>
 );
 
-const UserDashboard = ({ onBack }) => {
+const UserDashboard = ({ onBack, fromRegistration }) => {
   const [userInfo, setUserInfo] = useState({
     nombreCompleto: '',
     edad: '',
@@ -468,11 +468,180 @@ const UserDashboard = ({ onBack }) => {
     }
   };
   
+  const steps = [
+    {
+      label: 'Foto de Perfil',
+      render: () => (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><UserCircleIcon className="w-6 h-6 mr-2 text-[#ffd662]" /> Foto de Perfil</h2>
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+            <div className="flex">
+              <div className="flex-shrink-0">⚠️</div>
+              <div className="ml-3"><p className="text-sm text-yellow-700 font-medium"><strong>Importante:</strong> Favor de cargar una imagen real tuya; de lo contrario, se eliminará tu perfil.</p></div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex-shrink-0">
+              {userInfo.fotoPerfilUrl ? <img src={userInfo.fotoPerfilUrl} alt="Foto de perfil" className="h-20 w-20 rounded-full object-cover border-2 border-[#ffd662]" /> : <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300"><UserCircleIcon className="h-10 w-10 text-gray-400" /></div>}
+            </div>
+            <div className="flex items-center gap-2">
+              <input ref={fotoPerfilRef} type="file" name="fotoPerfil" accept="image/*" onChange={handleInputChange} className="flex-grow w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#ffd662] file:text-black hover:file:bg-yellow-400" />
+              {userInfo.fotoPerfilUrl && (
+                <button type="button" onClick={() => handleClearFile('fotoPerfil')} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700" title="Quitar archivo">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-gray-500">PNG, JPG, GIF hasta 5MB</p>
+          </div>
+        </div>
+      ),
+      validate: () => !!userInfo.fotoPerfil,
+    },
+    {
+      label: 'Documento de Identidad',
+      render: () => (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><IdentificationIcon className="w-6 h-6 mr-2 text-[#ffd662]" /> Documento de identidad</h2>
+          <p className="text-sm text-gray-600 mb-3">Sube tu INE, pasaporte o licencia. Si eres menor de edad, sube tu acta de nacimiento.</p>
+          <div className="flex items-center space-x-4">
+            {userInfo.documentoIdentidadUrl && <div className="flex-shrink-0"><img src={userInfo.documentoIdentidadUrl} alt="Documento de identidad" className="h-16 w-24 object-cover border border-gray-300 rounded"/></div>}
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <input ref={documentoIdentidadRef} type="file" name="documentoIdentidad" accept="image/*,.pdf" onChange={handleInputChange} className="flex-grow w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#ffd662] file:text-black hover:file:bg-yellow-400" />
+                {userInfo.documentoIdentidadUrl && (
+                  <button type="button" onClick={() => handleClearFile('documentoIdentidad')} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700" title="Quitar archivo">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <p className="mt-1 text-sm text-gray-500">PNG, JPG, PDF hasta 10MB</p>
+            </div>
+          </div>
+        </div>
+      ),
+      validate: () => !!userInfo.documentoIdentidad,
+    },
+    {
+      label: 'Información Personal',
+      render: () => (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><UserCircleIcon className="w-6 h-6 mr-2 text-[#ffd662]" />Información personal</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label><input type="text" name="nombreCompleto" value={userInfo.nombreCompleto} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento *</label><div className="grid grid-cols-3 gap-2"><select name="fechaNacimiento.dia" value={userInfo.fechaNacimiento.dia} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Día</option>{generateDays().map(day => <option key={day} value={day}>{day}</option>)}</select><select name="fechaNacimiento.mes" value={userInfo.fechaNacimiento.mes} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Mes</option>{generateMonths().map(month => <option key={month.value} value={month.value}>{month.label}</option>)}</select><select name="fechaNacimiento.año" value={userInfo.fechaNacimiento.año} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Año</option>{generateYears().map(year => <option key={year} value={year}>{year}</option>)}</select></div></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Edad (automática)</label><input type="text" value={userInfo.edad ? `${userInfo.edad} años` : ''} className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600" readOnly /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Género *</label><select name="genero" value={userInfo.genero} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Selecciona tu género</option><option value="masculino">Masculino</option><option value="femenino">Femenino</option><option value="otro">Otro</option></select></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Nivel Educativo Actual *</label><div className="space-y-2">{['preparatoria', 'licenciatura', 'posgrado', 'exatec'].map((nivel) => <label key={nivel} className="flex items-center"><input type="radio" name="nivelEducativo" value={nivel} checked={userInfo.nivelEducativo === nivel} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300" /><span className="ml-2 text-sm text-gray-700 capitalize">{nivel === 'exatec' ? 'Exatec' : nivel}</span></label>)}</div></div>
+            {userInfo.nivelEducativo === 'preparatoria' && <div><label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Preparatoria *</label><select name="tipoPreparatoria" value={userInfo.tipoPreparatoria} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Selecciona el tipo</option><option value="bicultural">Bicultural</option><option value="multicultural">Multicultural</option><option value="internacional">Internacional</option></select></div>}
+            {(userInfo.nivelEducativo === 'licenciatura' || userInfo.nivelEducativo === 'posgrado') && <div><label className="block text-sm font-medium text-gray-700 mb-2">Carrera (4 letras máximo) *</label><input type="text" name="carrera" value={userInfo.carrera} onChange={handleInputChange} placeholder="EJ: INGE" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent uppercase" maxLength={4} /><p className="mt-1 text-xs text-gray-500">Máximo 4 letras, sin números</p></div>}
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Universidad *</label><input type="text" name="universidad" value={userInfo.universidad} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Semestre *</label><select name="semestre" value={userInfo.semestre} onChange={handleInputChange} className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent ${userInfo.nivelEducativo === 'exatec' ? 'bg-gray-100' : ''}`} disabled={userInfo.nivelEducativo === 'exatec'}><option value="">Selecciona tu semestre</option>{Array.from({ length: 10 }, (_, i) => i + 1).map(s => <option key={s} value={s}>{s}º Semestre</option>)}<option value="egresado">Egresado</option></select></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label><div className="flex"><select name="telefono.codigoPais" value={userInfo.telefono.codigoPais} onChange={handleInputChange} className="w-28 px-2 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent bg-gray-50">{codigosPais.map(({ codigo, sigla }) => <option key={codigo} value={codigo}>{sigla} {codigo}</option>)}</select><input type="tel" name="telefono.numero" value={userInfo.telefono.numero} onChange={handleInputChange} placeholder="1234567890" className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" maxLength={10} /></div><p className="mt-1 text-xs text-gray-500">Máximo 10 dígitos</p></div>
+            <div className="md:col-span-2">
+                <div className="grid grid-cols-2 gap-x-4 items-end">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <input type="email" name="email" value={userInfo.email} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" />
+                  </div>
+                  <div className="flex items-center mb-0.5 h-full">
+                    <input type="checkbox" name="esMexicano" checked={userInfo.esMexicano} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded ml-2" />
+                    <label className="ml-2 block text-sm text-gray-700 whitespace-nowrap">¿Eres mexicano?</label>
+                  </div>
+                </div>
+            </div>
+            {userInfo.esMexicano && <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 mb-2">Estado de Origen *</label><select name="estadoOrigen" value={userInfo.estadoOrigen} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Selecciona tu estado</option>{estadosMexico.map(estado => <option key={estado} value={estado}>{estado}</option>)}</select></div>}
+          </div>
+        </div>
+      ),
+      validate: () => userInfo.nombreCompleto && userInfo.fechaNacimiento.dia && userInfo.fechaNacimiento.mes && userInfo.fechaNacimiento.año && userInfo.genero && userInfo.nivelEducativo && userInfo.universidad && userInfo.semestre && userInfo.telefono.numero && userInfo.email,
+    },
+    {
+      label: 'Preferencias',
+      render: () => (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><BuildingIcon className="w-6 h-6 mr-2 text-[#ffd662]" />Mis preferencias</h2>
+          <div className="space-y-6 mt-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">Mis hobbies (máximo 5)</label>
+                <span className="text-xs text-gray-500">Un clic para seleccionar, doble clic para deseleccionar.</span>
+              </div>
+              <div className="flex flex-wrap gap-2">{initialHobbies.map(({name, icon}) => <button type="button" key={name} onClick={() => handleHobbyClick(name)} onDoubleClick={() => handleHobbyDoubleClick(name)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${(userInfo.preferencias.hobbies || []).includes(name) ? 'bg-yellow-200 text-yellow-800 ring-2 ring-yellow-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}><span className="text-lg">{icon}</span>{name}</button>)}</div>
+            </div>
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">No-negociables (mínimo 3)</label>
+                <span className="text-xs text-gray-500">Un clic para seleccionar/deseleccionar.</span>
+              </div>
+              <div className="flex flex-wrap gap-2">{noNegociablesList.map(({name, icon}) => <button type="button" key={name} onClick={() => handleNoNegociableClick(name)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${(userInfo.preferencias.noNegociables || []).includes(name) ? 'bg-yellow-200 text-yellow-800 ring-2 ring-yellow-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}><span className="text-lg">{icon}</span>{name}</button>)}</div>
+              {(userInfo.preferencias.noNegociables || []).includes('Agregar otra opción') && <div className="mt-3 flex items-center gap-2"><input type="text" name="preferencias.otroNoNegociable" value={userInfo.preferencias.otroNoNegociable} onChange={handleInputChange} className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" maxLength={100} placeholder="Escribe tu 'No-negociable'" /><button type="button" onClick={handleAddNoNegociable} className="bg-[#ffd662] text-black font-bold py-2 px-4 rounded-md hover:bg-yellow-400 transition duration-300">Enviar</button></div>}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+              <div><label className="block text-sm font-medium text-gray-700 mb-2">Prefiero roomies</label><select name="preferencias.preferenciaRoomie" value={userInfo.preferencias.preferenciaRoomie} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent"><option value="">Cualquiera</option><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="mixto">Mixto</option></select></div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tengo mascota</label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center"><input type="radio" name="preferencias.tieneMascota" value="si" checked={userInfo.preferencias.tieneMascota === 'si'} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300" /><span className="ml-2 text-sm">Sí</span></label>
+                  <label className="flex items-center"><input type="radio" name="preferencias.tieneMascota" value="no" checked={userInfo.preferencias.tieneMascota === 'no'} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300" /><span className="ml-2 text-sm">No</span></label>
+                </div>
+                {userInfo.preferencias.tieneMascota === 'si' && <div className="mt-4"><label className="block text-sm font-medium text-gray-700 my-2">Tipo de mascota</label><div className="flex flex-wrap gap-4">{['Perro', 'Gato', 'Roedor', 'Otro'].map(tipo => <label key={tipo} className="flex items-center"><input type="checkbox" value={tipo} checked={(userInfo.preferencias.tipoMascota || []).includes(tipo)} onChange={handlePetTypeChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded" /><span className="ml-2 text-sm">{tipo}</span></label>)}</div>{(userInfo.preferencias.tipoMascota || []).includes('Otro') && <div className="mt-3"><label className="block text-sm font-medium text-gray-700 mb-2">Especifica tu mascota</label><input type="text" name="preferencias.otroTipoMascota" value={userInfo.preferencias.otroTipoMascota} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" maxLength={50} /></div>}</div>}
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <div className="flex items-center">
+                <input type="checkbox" name="preferencias.fumador" checked={userInfo.preferencias.fumador} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300 rounded" />
+                <label className="ml-2 block text-sm text-gray-700">¿Eres fumador?</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      validate: () => true, // Puedes agregar validaciones específicas
+    },
+    {
+      label: 'Contacto de Emergencia',
+      render: () => (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><PhoneIcon className="w-6 h-6 mr-2 text-[#ffd662]" />Contacto de Emergencia</h2>
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"><div className="flex"><div className="flex-shrink-0">⚠️</div><div className="ml-3"><p className="text-sm text-yellow-700 font-medium"><strong>Importante:</strong> Favor de ingresar el nombre completo de la persona tal cual como aparece en su identificación oficial.</p></div></div></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Nombre(s) *</label><input type="text" name="contactoEmergencia.nombres" value={userInfo.contactoEmergencia.nombres} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Apellido(s) *</label><input type="text" name="contactoEmergencia.apellidos" value={userInfo.contactoEmergencia.apellidos} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label><div className="flex"><select name="contactoEmergencia.telefono.codigoPais" value={userInfo.contactoEmergencia.telefono.codigoPais} onChange={handleInputChange} className="w-28 px-2 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent bg-gray-50">{codigosPais.map(({ codigo, sigla }) => <option key={codigo} value={codigo}>{sigla} {codigo}</option>)}</select><input type="tel" name="contactoEmergencia.telefono.numero" value={userInfo.contactoEmergencia.telefono.numero} onChange={handleInputChange} placeholder="1234567890" className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" maxLength={10} /></div></div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">¿Habla español?</label>
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center"><input type="radio" name="contactoEmergencia.hablaEspanol" value="si" checked={userInfo.contactoEmergencia.hablaEspanol === 'si'} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300" /><span className="ml-2 text-sm">Sí</span></label>
+                <label className="flex items-center"><input type="radio" name="contactoEmergencia.hablaEspanol" value="no" checked={userInfo.contactoEmergencia.hablaEspanol === 'no'} onChange={handleInputChange} className="h-4 w-4 text-[#ffd662] focus:ring-[#ffd662] border-gray-300" /><span className="ml-2 text-sm">No</span></label>
+              </div>
+            </div>
+            {userInfo.contactoEmergencia.hablaEspanol === 'no' && <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 mb-2">Idioma del contacto</label><input type="text" name="contactoEmergencia.idioma" value={userInfo.contactoEmergencia.idioma} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffd662] focus:border-transparent" placeholder="Ej: Inglés" /></div>}
+          </div>
+        </div>
+      ),
+      validate: () => userInfo.contactoEmergencia.nombres && userInfo.contactoEmergencia.apellidos && userInfo.contactoEmergencia.telefono.numero,
+    },
+  ];
+
+  const [step, setStep] = useState(0);
+  const currentStep = steps[step];
+  const isLastStep = step === steps.length - 1;
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white">
+      {fromRegistration && (
+        <div className="bg-[#ffd662] text-black text-center py-4 font-bold text-lg shadow-md">
+          ¡Bienvenido! Completa tu perfil para encontrar tu roomie ideal 🎉
+        </div>
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <button onClick={onBack} className="flex items-center text-[#FFDC30] hover:text-yellow-600 font-semibold mb-4">
+          <button onClick={onBack} className="flex items-center text-[#ffd662] hover:text-yellow-600 font-semibold mb-4">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Volver
           </button>
@@ -482,150 +651,70 @@ const UserDashboard = ({ onBack }) => {
             {lastSaved && <div className="text-sm text-gray-500 bg-green-100 px-3 py-1 rounded-full mt-2">Último guardado: {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-          <form onSubmit={handleSubmit} noValidate className="space-y-12">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><UserCircleIcon className="w-6 h-6 mr-2 text-[#FFDC30]" /> Foto de Perfil</h2>
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">⚠️</div>
-                  <div className="ml-3"><p className="text-sm text-yellow-700 font-medium"><strong>Importante:</strong> Favor de cargar una imagen real tuya; de lo contrario, se eliminará tu perfil.</p></div>
-                </div>
+        <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+            <form onSubmit={handleSubmit} noValidate>
+              {currentStep.render()}
+              <div className="flex justify-between mt-8">
+                <button type="button" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className="px-6 py-3 rounded-lg font-medium transition-colors font-['Poppins'] bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50">Anterior</button>
+                {!isLastStep ? (
+                  <button type="button" onClick={() => { if(currentStep.validate()) setStep(s => Math.min(steps.length - 1, s + 1)); else alert('Por favor completa los campos requeridos de este paso.'); }} className="px-6 py-3 rounded-lg font-medium transition-colors font-['Poppins'] bg-[#ffd662] text-black hover:bg-[#e6c52b]">Siguiente</button>
+                ) : (
+                  <button type="submit" disabled={isSaving} className="bg-[#ffd662] text-black font-bold py-3 px-6 rounded-md hover:bg-yellow-400 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">{isSaving ? <>Guardando...</> : <>Guardar Información</>}</button>
+                )}
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  {userInfo.fotoPerfilUrl ? <img src={userInfo.fotoPerfilUrl} alt="Foto de perfil" className="h-20 w-20 rounded-full object-cover border-2 border-[#FFDC30]" /> : <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300"><UserCircleIcon className="h-10 w-10 text-gray-400" /></div>}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <input ref={fotoPerfilRef} type="file" name="fotoPerfil" accept="image/*" onChange={handleInputChange} className="flex-grow w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#FFDC30] file:text-black hover:file:bg-yellow-400" />
-                    {userInfo.fotoPerfilUrl && (
-                      <button type="button" onClick={() => handleClearFile('fotoPerfil')} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700" title="Quitar archivo">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  <p className="mt-1 text-sm text-gray-500">PNG, JPG, GIF hasta 5MB</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><IdentificationIcon className="w-6 h-6 mr-2 text-[#FFDC30]" /> Documento de identidad</h2>
-              <p className="text-sm text-gray-600 mb-3">Sube tu INE, pasaporte o licencia. Si eres menor de edad, sube tu acta de nacimiento.</p>
-              <div className="flex items-center space-x-4">
-                {userInfo.documentoIdentidadUrl && <div className="flex-shrink-0"><img src={userInfo.documentoIdentidadUrl} alt="Documento de identidad" className="h-16 w-24 object-cover border border-gray-300 rounded"/></div>}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <input ref={documentoIdentidadRef} type="file" name="documentoIdentidad" accept="image/*,.pdf" onChange={handleInputChange} className="flex-grow w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#FFDC30] file:text-black hover:file:bg-yellow-400" />
-                    {userInfo.documentoIdentidadUrl && (
-                      <button type="button" onClick={() => handleClearFile('documentoIdentidad')} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700" title="Quitar archivo">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  <p className="mt-1 text-sm text-gray-500">PNG, JPG, PDF hasta 10MB</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><UserCircleIcon className="w-6 h-6 mr-2 text-[#FFDC30]" />Información personal</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label><input type="text" name="nombreCompleto" value={userInfo.nombreCompleto} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento *</label><div className="grid grid-cols-3 gap-2"><select name="fechaNacimiento.dia" value={userInfo.fechaNacimiento.dia} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Día</option>{generateDays().map(day => <option key={day} value={day}>{day}</option>)}</select><select name="fechaNacimiento.mes" value={userInfo.fechaNacimiento.mes} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Mes</option>{generateMonths().map(month => <option key={month.value} value={month.value}>{month.label}</option>)}</select><select name="fechaNacimiento.año" value={userInfo.fechaNacimiento.año} onChange={handleInputChange} className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Año</option>{generateYears().map(year => <option key={year} value={year}>{year}</option>)}</select></div></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Edad (automática)</label><input type="text" value={userInfo.edad ? `${userInfo.edad} años` : ''} className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600" readOnly /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Género *</label><select name="genero" value={userInfo.genero} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Selecciona tu género</option><option value="masculino">Masculino</option><option value="femenino">Femenino</option><option value="otro">Otro</option></select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Nivel Educativo Actual *</label><div className="space-y-2">{['preparatoria', 'licenciatura', 'posgrado', 'exatec'].map((nivel) => <label key={nivel} className="flex items-center"><input type="radio" name="nivelEducativo" value={nivel} checked={userInfo.nivelEducativo === nivel} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300" /><span className="ml-2 text-sm text-gray-700 capitalize">{nivel === 'exatec' ? 'Exatec' : nivel}</span></label>)}</div></div>
-                {userInfo.nivelEducativo === 'preparatoria' && <div><label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Preparatoria *</label><select name="tipoPreparatoria" value={userInfo.tipoPreparatoria} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Selecciona el tipo</option><option value="bicultural">Bicultural</option><option value="multicultural">Multicultural</option><option value="internacional">Internacional</option></select></div>}
-                {(userInfo.nivelEducativo === 'licenciatura' || userInfo.nivelEducativo === 'posgrado') && <div><label className="block text-sm font-medium text-gray-700 mb-2">Carrera (4 letras máximo) *</label><input type="text" name="carrera" value={userInfo.carrera} onChange={handleInputChange} placeholder="EJ: INGE" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent uppercase" maxLength={4} /><p className="mt-1 text-xs text-gray-500">Máximo 4 letras, sin números</p></div>}
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Universidad *</label><input type="text" name="universidad" value={userInfo.universidad} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Semestre *</label><select name="semestre" value={userInfo.semestre} onChange={handleInputChange} className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent ${userInfo.nivelEducativo === 'exatec' ? 'bg-gray-100' : ''}`} disabled={userInfo.nivelEducativo === 'exatec'}><option value="">Selecciona tu semestre</option>{Array.from({ length: 10 }, (_, i) => i + 1).map(s => <option key={s} value={s}>{s}º Semestre</option>)}<option value="egresado">Egresado</option></select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label><div className="flex"><select name="telefono.codigoPais" value={userInfo.telefono.codigoPais} onChange={handleInputChange} className="w-28 px-2 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent bg-gray-50">{codigosPais.map(({ codigo, sigla }) => <option key={codigo} value={codigo}>{sigla} {codigo}</option>)}</select><input type="tel" name="telefono.numero" value={userInfo.telefono.numero} onChange={handleInputChange} placeholder="1234567890" className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" maxLength={10} /></div><p className="mt-1 text-xs text-gray-500">Máximo 10 dígitos</p></div>
-                <div className="md:col-span-2">
-                    <div className="grid grid-cols-2 gap-x-4 items-end">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                        <input type="email" name="email" value={userInfo.email} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" />
-                      </div>
-                      <div className="flex items-center mb-0.5 h-full">
-                        <input type="checkbox" name="esMexicano" checked={userInfo.esMexicano} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded ml-2" />
-                        <label className="ml-2 block text-sm text-gray-700 whitespace-nowrap">¿Eres mexicano?</label>
-                      </div>
-                    </div>
-                </div>
-                {userInfo.esMexicano && <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 mb-2">Estado de Origen *</label><select name="estadoOrigen" value={userInfo.estadoOrigen} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Selecciona tu estado</option>{estadosMexico.map(estado => <option key={estado} value={estado}>{estado}</option>)}</select></div>}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><BuildingIcon className="w-6 h-6 mr-2 text-[#FFDC30]" />Mis preferencias</h2>
-              <div className="space-y-6 mt-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700">Mis hobbies (máximo 5)</label>
-                    <span className="text-xs text-gray-500">Un clic para seleccionar, doble clic para deseleccionar.</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">{initialHobbies.map(({name, icon}) => <button type="button" key={name} onClick={() => handleHobbyClick(name)} onDoubleClick={() => handleHobbyDoubleClick(name)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${(userInfo.preferencias.hobbies || []).includes(name) ? 'bg-yellow-200 text-yellow-800 ring-2 ring-yellow-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}><span className="text-lg">{icon}</span>{name}</button>)}</div>
-                </div>
-                <div className="pt-4 border-t">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700">No-negociables (mínimo 3)</label>
-                    <span className="text-xs text-gray-500">Un clic para seleccionar/deseleccionar.</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">{noNegociablesList.map(({name, icon}) => <button type="button" key={name} onClick={() => handleNoNegociableClick(name)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${(userInfo.preferencias.noNegociables || []).includes(name) ? 'bg-yellow-200 text-yellow-800 ring-2 ring-yellow-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}><span className="text-lg">{icon}</span>{name}</button>)}</div>
-                  {(userInfo.preferencias.noNegociables || []).includes('Agregar otra opción') && <div className="mt-3 flex items-center gap-2"><input type="text" name="preferencias.otroNoNegociable" value={userInfo.preferencias.otroNoNegociable} onChange={handleInputChange} className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" maxLength={100} placeholder="Escribe tu 'No-negociable'" /><button type="button" onClick={handleAddNoNegociable} className="bg-[#FFDC30] text-black font-bold py-2 px-4 rounded-md hover:bg-yellow-400 transition duration-300">Enviar</button></div>}
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-                  <div><label className="block text-sm font-medium text-gray-700 mb-2">Prefiero roomies</label><select name="preferencias.preferenciaRoomie" value={userInfo.preferencias.preferenciaRoomie} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent"><option value="">Cualquiera</option><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="mixto">Mixto</option></select></div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tengo mascota</label>
-                    <div className="flex items-center space-x-4">
-                      <label className="flex items-center"><input type="radio" name="preferencias.tieneMascota" value="si" checked={userInfo.preferencias.tieneMascota === 'si'} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300" /><span className="ml-2 text-sm">Sí</span></label>
-                      <label className="flex items-center"><input type="radio" name="preferencias.tieneMascota" value="no" checked={userInfo.preferencias.tieneMascota === 'no'} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300" /><span className="ml-2 text-sm">No</span></label>
-                    </div>
-                    {userInfo.preferencias.tieneMascota === 'si' && <div className="mt-4"><label className="block text-sm font-medium text-gray-700 my-2">Tipo de mascota</label><div className="flex flex-wrap gap-4">{['Perro', 'Gato', 'Roedor', 'Otro'].map(tipo => <label key={tipo} className="flex items-center"><input type="checkbox" value={tipo} checked={(userInfo.preferencias.tipoMascota || []).includes(tipo)} onChange={handlePetTypeChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded" /><span className="ml-2 text-sm">{tipo}</span></label>)}</div>{(userInfo.preferencias.tipoMascota || []).includes('Otro') && <div className="mt-3"><label className="block text-sm font-medium text-gray-700 mb-2">Especifica tu mascota</label><input type="text" name="preferencias.otroTipoMascota" value={userInfo.preferencias.otroTipoMascota} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" maxLength={50} /></div>}</div>}
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <div className="flex items-center">
-                    <input type="checkbox" name="preferencias.fumador" checked={userInfo.preferencias.fumador} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded" />
-                    <label className="ml-2 block text-sm text-gray-700">¿Eres fumador?</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center border-b pb-2"><PhoneIcon className="w-6 h-6 mr-2 text-[#FFDC30]" />Contacto de Emergencia</h2>
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"><div className="flex"><div className="flex-shrink-0">⚠️</div><div className="ml-3"><p className="text-sm text-yellow-700 font-medium"><strong>Importante:</strong> Favor de ingresar el nombre completo de la persona tal cual como aparece en su identificación oficial.</p></div></div></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Nombre(s) *</label><input type="text" name="contactoEmergencia.nombres" value={userInfo.contactoEmergencia.nombres} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Apellido(s) *</label><input type="text" name="contactoEmergencia.apellidos" value={userInfo.contactoEmergencia.apellidos} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label><div className="flex"><select name="contactoEmergencia.telefono.codigoPais" value={userInfo.contactoEmergencia.telefono.codigoPais} onChange={handleInputChange} className="w-28 px-2 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent bg-gray-50">{codigosPais.map(({ codigo, sigla }) => <option key={codigo} value={codigo}>{sigla} {codigo}</option>)}</select><input type="tel" name="contactoEmergencia.telefono.numero" value={userInfo.contactoEmergencia.telefono.numero} onChange={handleInputChange} placeholder="1234567890" className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" maxLength={10} /></div></div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">¿Habla español?</label>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center"><input type="radio" name="contactoEmergencia.hablaEspanol" value="si" checked={userInfo.contactoEmergencia.hablaEspanol === 'si'} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300" /><span className="ml-2 text-sm">Sí</span></label>
-                    <label className="flex items-center"><input type="radio" name="contactoEmergencia.hablaEspanol" value="no" checked={userInfo.contactoEmergencia.hablaEspanol === 'no'} onChange={handleInputChange} className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300" /><span className="ml-2 text-sm">No</span></label>
-                  </div>
-                </div>
-                {userInfo.contactoEmergencia.hablaEspanol === 'no' && <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 mb-2">Idioma del contacto</label><input type="text" name="contactoEmergencia.idioma" value={userInfo.contactoEmergencia.idioma} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-transparent" placeholder="Ej: Inglés" /></div>}
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
-              <button type="submit" disabled={isSaving} className="flex-1 bg-[#FFDC30] text-black font-bold py-3 px-6 rounded-md hover:bg-yellow-400 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                {isSaving ? <><svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Guardando...</> : <><svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Guardar Información</>}
-              </button>
-              <button type="button" onClick={onBack} className="flex-1 border-2 border-[#FFDC30] text-black font-bold py-3 px-6 rounded-md hover:bg-yellow-100 transition duration-300">Cancelar</button>
-            </div>
-          </form>
-        </div>
+             {/* Progress bar/slider at the bottom */}
+             <div className="w-full mt-8">
+               <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                 <div
+                   className="absolute left-0 top-0 h-full bg-[#ffd662] transition-all duration-300"
+                   style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                 />
+               </div>
+               <div className="flex justify-between items-center mt-2">
+                 {steps.map((s, i) => {
+  const isActive = i <= step;
+  const color = isActive ? '#ffd662' : '#D1D5DB';
+  return (
+    <div
+      key={s.label}
+      title={s.label}
+      className="mx-1 flex items-center justify-center"
+      style={{ width: '1.5rem', height: '1.5rem' }}
+    >
+      {i === steps.length - 1 ? (
+        // Casa con techo de birrete, color dinámico
+        <svg viewBox="0 0 48 32" width="28" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Techo de birrete */}
+          <polygon points="24,4 4,12 24,20 44,12 24,4" fill={color} />
+          {/* Cinta del birrete */}
+          <rect x="16" y="16" width="16" height="3" rx="1.5" fill={color} />
+          {/* Borla */}
+          <line x1="24" y1="4" x2="24" y2="28" stroke={color} strokeWidth="2" />
+          <circle cx="24" cy="28" r="2" fill={color} />
+          {/* Casa */}
+          <rect x="12" y="20" width="24" height="10" rx="2" fill={color} />
+          {/* Puerta */}
+          <rect x="22" y="25" width="4" height="5" rx="1" fill="#fff" fillOpacity="0.7" />
+        </svg>
+      ) : (
+        // Birrete 2D de frente, color dinámico
+        <svg viewBox="0 0 48 24" width="28" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Parte superior del birrete */}
+          <polygon points="24,4 4,12 24,20 44,12 24,4" fill={color} />
+          {/* Cinta del birrete */}
+          <rect x="16" y="16" width="16" height="3" rx="1.5" fill={color} />
+          {/* Borla */}
+          <line x1="24" y1="4" x2="24" y2="22" stroke={color} strokeWidth="2" />
+          <circle cx="24" cy="22" r="2" fill={color} />
+        </svg>
+      )}
+    </div>
+  );
+})}
+               </div>
+             </div>
+            </form>
+          </div>
       </div>
     </div>
   );

@@ -19,8 +19,9 @@ const App = () => {
   const [searchFilters, setSearchFilters] = useState(null); // Estado para guardar los filtros
   const [propertiesToCompare, setPropertiesToCompare] = useState([]); // Estado para propiedades a comparar
   const [registrationType, setRegistrationType] = useState(null); // Estado para el tipo de registro
+  const [fromRegistration, setFromRegistration] = useState(false); // Nuevo estado para saber si viene de registro
 
-  const handleNavigate = (page, data = null, filters = null, registrationType = null) => {
+  const handleNavigate = (page, data = null, filters = null, registrationType = null, fromReg = false) => {
     setCurrentPage(page);
     if (page === 'propertyDetail') {
       setSelectedProperty(data);
@@ -38,6 +39,7 @@ const App = () => {
     if (registrationType) {
       setRegistrationType(registrationType);
     }
+    setFromRegistration(!!fromReg); // Guardar si viene de registro
     window.scrollTo(0, 0);
   };
 
@@ -68,7 +70,7 @@ const App = () => {
         ) : currentPage === 'comparePage' && propertiesToCompare.length > 0 ? (
           <PropertyComparator propertiesToCompare={propertiesToCompare} onBack={() => handleNavigate('search', null, searchFilters)} />
         ) : currentPage === 'dashboard' ? (
-          <UserDashboard onBack={() => handleNavigate('home')} />
+          <UserDashboard onBack={() => handleNavigate('home')} fromRegistration={fromRegistration} />
         ) : currentPage === 'propertyOwnerRegistration' ? (
           <PropertyOwnerRegistration onBack={() => handleNavigate('home')} />
         ) : null}
