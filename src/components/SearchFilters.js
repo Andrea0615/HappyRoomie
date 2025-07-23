@@ -90,6 +90,11 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
     "Agua potable"
   ];
 
+  const securityOptions = [
+    "Condominio privado con seguridad 24/7",
+    "Edificio con seguridad 24/7"
+  ];
+
   const MIN_PRICE = 3500;
   const MAX_PRICE = 35000;
   const STEP = 500;
@@ -734,6 +739,26 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                   </label>
                 </div>
               ))}
+            </div>
+            {/* Categoría de Seguridad */}
+            <div className="mt-6">
+              <h3 className="text-md font-medium text-black mb-3">Seguridad</h3>
+              <div className="flex flex-wrap gap-2">
+                {securityOptions.map(option => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => handleFilterChangeInternal({ securityType: filters.securityType === option ? '' : option })}
+                    className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                      filters.securityType === option
+                        ? 'bg-[#FFDC30] text-black font-medium'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

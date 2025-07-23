@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CallToAction = () => {
+const CallToAction = ({ onNavigate }) => {
   return (
     <section className="py-16 bg-[#FFDC30]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,7 +37,10 @@ const CallToAction = () => {
                   <span className="text-gray-600">Soporte personalizado</span>
                 </li>
               </ul>
-              <button className="px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
+              <button 
+                className="px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300"
+                onClick={() => onNavigate('propertyOwnerRegistration', null, null, 'propertyOwner')}
+              >
                 Publicar mi propiedad
               </button>
             </div>
