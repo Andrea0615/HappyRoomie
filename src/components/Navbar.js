@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
+import RegistrationModal from './RegistrationModal';
 
 const Navbar = ({ currentPage, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleRegistrationClick = () => {
+    setIsRegistrationModalOpen(true);
+    setIsMenuOpen(false); // Close mobile menu if open
+  };
+
+  const handleRegistrationOption = (option) => {
+    setIsRegistrationModalOpen(false);
+    if (option === 'estudiante') {
+      onNavigate('dashboard'); // Navigate to student registration form
+    } else if (option === 'rentar') {
+      // Navigate to property owner registration form
+      onNavigate('propertyOwnerRegistration', null, null, 'propertyOwner');
+    }
   };
 
   return (
@@ -17,9 +34,9 @@ const Navbar = ({ currentPage, onNavigate }) => {
               onClick={() => onNavigate('home')}
             >
               <img
-                className="h-16 w-auto" // Ajusta el tamaño según sea necesario
-                src="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0xBU97eawB9QM6ZyvCAYlu4dSEThWpbaxnVFO" // Nuevo logo PNG
-                alt="Happy Rommie Logo"
+                className="h-16 w-auto"
+                src="/125 sin título_20250717140421.png"
+                alt="Liviko Logo"
               />
             </div>
           </div>
@@ -28,22 +45,28 @@ const Navbar = ({ currentPage, onNavigate }) => {
             <a 
               href="#" 
               onClick={() => onNavigate('home')}
-              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
             >
               Inicio
             </a>
             <a 
               href="#" 
               onClick={() => onNavigate('search')}
-              className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
             >
               Buscar propiedades
             </a>
-            <a href="#" className="px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
-            <button className="ml-4 px-4 py-2 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
-              Iniciar Sesión
+            <a href="#" className="px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <button 
+              onClick={() => onNavigate('dashboard')}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+            >
+              Mi Perfil
             </button>
-            <button className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
+            <button 
+              onClick={handleRegistrationClick}
+              className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+            >
               Registrarse
             </button>
           </div>
@@ -80,7 +103,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
                 onNavigate('home');
                 setIsMenuOpen(false);
               }}
-              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
+              className={`block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'home' ? 'bg-yellow-100' : ''}`}
             >
               Inicio
             </a>
@@ -90,20 +113,35 @@ const Navbar = ({ currentPage, onNavigate }) => {
                 onNavigate('search');
                 setIsMenuOpen(false);
               }}
-              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
+              className={`block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'search' ? 'bg-yellow-100' : ''}`}
             >
               Buscar propiedades
             </a>
-            <a href="#" className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
-            <button className="mt-2 w-full px-4 py-2 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
-              Iniciar Sesión
+            <a href="#" className="block px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <button 
+              onClick={() => {
+                onNavigate('dashboard');
+                setIsMenuOpen(false);
+              }}
+              className={`w-full text-left px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
+            >
+              Mi Perfil
             </button>
-            <button className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
+            <button 
+              onClick={handleRegistrationClick}
+              className="mt-2 w-full px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+            >
               Registrarse
             </button>
           </div>
         </div>
       )}
+      
+      <RegistrationModal 
+        isOpen={isRegistrationModalOpen}
+        onClose={() => setIsRegistrationModalOpen(false)}
+        onOptionSelect={handleRegistrationOption}
+      />
     </nav>
   );
 };

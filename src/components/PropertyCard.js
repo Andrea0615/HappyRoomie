@@ -16,7 +16,8 @@ const PropertyCard = ({ property, onViewDetails, onCompareToggle, isComparing })
 
   // Formatea el precio para mostrar comas como separadores de miles
   const formatPrice = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (typeof value !== 'number') return value;
+    return value.toLocaleString('en-US');
   };
 
   // Función para capitalizar solo la primera letra de la primera palabra
@@ -36,16 +37,16 @@ const PropertyCard = ({ property, onViewDetails, onCompareToggle, isComparing })
           className="w-full h-48 object-cover"
         />
         {isVerified && (
-          <div className="absolute top-2 left-2 bg-[#FFDC30] text-black text-xs font-bold px-2 py-1 rounded-md">
+          <div className="absolute top-2 left-2 bg-[#ffd662] text-[#0a2a5c] text-xs font-bold px-2 py-1 rounded-md">
             Disponible
           </div>
         )}
         {petFriendly && (
-          <div className="absolute top-2 right-2 bg-black text-white text-xs font-bold px-2 py-1 rounded-md">
+          <div className="absolute top-2 right-2 bg-[#0a2a5c] text-white text-xs font-bold px-2 py-1 rounded-md">
             Pet Friendly
           </div>
         )}
-        <div className="absolute bottom-2 right-2 bg-white text-black text-xs font-bold px-2 py-1 rounded-md">
+        <div className="absolute bottom-2 right-2 bg-white text-[#0a2a5c] text-xs font-bold px-2 py-1 rounded-md">
           {type}
         </div>
       </div>
@@ -63,42 +64,30 @@ const PropertyCard = ({ property, onViewDetails, onCompareToggle, isComparing })
         
         <p className="mt-1 text-sm text-gray-600">{location}</p>
         
-        <div className="mt-3 flex flex-wrap gap-2">
-          {displayFeatures.map((feature, index) => (
-            <span 
-              key={index} 
-              className="inline-block bg-gray-100 text-black text-xs px-2 py-1 rounded"
-            >
-              {capitalizeFirstWord(feature)}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {features.map((feature, idx) => (
+            <span key={idx} className="inline-block bg-gray-100 text-[#0a2a5c] px-3 py-1 rounded-md text-sm font-medium">
+              {feature}
             </span>
           ))}
-          {/* Mostrar información de baños según el tipo de propiedad */}
-          {type === "Cuarto" && bathroomFeatureForRoom && (
-            <span className="inline-block bg-gray-100 text-black text-xs px-2 py-1 rounded">{capitalizeFirstWord(bathroomFeatureForRoom)}</span>
-          )}
-          {(type === "Casa" || type === "Departamento") && bathrooms && (
-            <span className="inline-block bg-gray-100 text-black text-xs px-2 py-1 rounded">
-              {bathrooms === 1 ? "1 baño" : `${bathrooms} baños`}
-            </span>
-          )}
         </div>
         
         <div className="mt-4 flex justify-between items-center">
           <div>
-            <span className="text-lg font-bold text-black">${formatPrice(price)}</span>
+            <span className="text-lg font-bold text-[#0a2a5c]">${formatPrice(price)}</span>
             <span className="text-sm text-gray-600"> /mes</span>
           </div>
           <div className="flex space-x-2">
             <button 
               onClick={() => onViewDetails(property)}
-              className="px-3 py-1 bg-[#FFDC30] text-black rounded font-medium hover:bg-yellow-400 transition duration-300"
+              className="px-3 py-1 bg-[#ffd662] text-[#0a2a5c] rounded font-medium hover:bg-yellow-400 transition duration-300"
             >
               Ver detalles
             </button>
             <button 
               onClick={() => onCompareToggle(property)}
               className={`px-3 py-1 rounded font-medium transition duration-300 ${
-                isComparing ? 'bg-black text-white' : 'bg-white text-black border border-black hover:bg-gray-100'
+                isComparing ? 'bg-[#0a2a5c] text-white' : 'bg-white text-[#0a2a5c] border border-[#0a2a5c] hover:bg-gray-100'
               }`}
             >
               Comparar

@@ -30,6 +30,14 @@ export const properties = [
     price: 12500,
     location: "Espacioso apartamento perfecto para compartir con amigos.",
     image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1380&q=80",
+    images: [
+      // Sala de estar
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80",
+      // Dormitorio
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80",
+      // Baño moderno
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+    ],
     features: [
       "2 baños",
       "Estacionamiento",
@@ -49,7 +57,8 @@ export const properties = [
     isVerified: true,
     isFeatured: true,
     petFriendly: true,
-    parkingSpaces: 1
+    parkingSpaces: 1,
+    securityType: "Edificio con seguridad 24/7"
   },
   {
     id: 3,
@@ -103,7 +112,8 @@ export const properties = [
     isVerified: false,
     isFeatured: true,
     petFriendly: true,
-    parkingSpaces: 2
+    parkingSpaces: 2,
+    securityType: "Condominio privado con seguridad 24/7"
   },
   {
     id: 5,
@@ -126,7 +136,8 @@ export const properties = [
     isVerified: true,
     isFeatured: true,
     petFriendly: false,
-    parkingSpaces: 0
+    parkingSpaces: 0,
+    securityType: "Edificio con seguridad 24/7"
   },
   {
     id: 6,

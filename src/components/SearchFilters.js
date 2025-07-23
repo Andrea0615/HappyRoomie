@@ -90,6 +90,11 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
     "Agua potable"
   ];
 
+  const securityOptions = [
+    "Condominio privado con seguridad 24/7",
+    "Edificio con seguridad 24/7"
+  ];
+
   const MIN_PRICE = 3500;
   const MAX_PRICE = 35000;
   const STEP = 500;
@@ -233,31 +238,34 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  // Agregar funciones de estilos para react-select
+  // Cambia la función getSelectStyles para forzar el color azul
   const getSelectStyles = (selectedValue) => ({
     control: (base, state) => ({
       ...base,
       minHeight: '36px',
       borderRadius: '0.375rem',
       borderColor: '#D1D5DB',
-      boxShadow: state.isFocused ? '0 0 0 1px #FFDC30' : base.boxShadow,
-      '&:hover': { borderColor: '#FFDC30' },
-      backgroundColor: '#FFDC30 !important', // Forzar amarillo con !important
-      background: '#FFDC30 !important',
-      color: '#000',
-      transition: 'background-color 0.2s',
+      boxShadow: state.isFocused ? '0 0 0 1px #ffd662' : base.boxShadow,
+      '&:hover': { borderColor: '#ffd662' },
+      backgroundColor: '#fff',
+      color: '#0a2a5c',
     }),
-    option: (base) => ({
+    option: (base, state) => ({
       ...base,
-      backgroundColor: 'white',
-      color: '#374151',
-      fontWeight: 400,
+      backgroundColor: state.isSelected ? '#ffd662' : '#fff',
+      color: '#0a2a5c',
+      fontWeight: state.isSelected ? 600 : 400,
       fontSize: '0.95rem',
     }),
     singleValue: (base) => ({
       ...base,
-      color: '#000',
+      color: '#0a2a5c',
       fontWeight: 600,
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: '#0a2a5c',
+      opacity: 1,
     }),
     menu: (base) => ({
       ...base,
@@ -271,7 +279,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
     <div>
       <form className="space-y-6">
         <div>
-          <h3 className="text-md font-medium text-black mb-3">Tipo de vivienda</h3>
+          <label className="block text-md font-bold text-[#0a2a5c] mb-3">Tipo de vivienda</label>
           <div className="flex flex-wrap gap-2">
             {propertyTypeOptions.map((type) => (
               <button
@@ -280,7 +288,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handlePropertyTypeSelect(type)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.propertyType === type 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -291,7 +299,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         </div>
         
         <div>
-          <h3 className="text-md font-medium text-black mb-3">Género compatible</h3>
+          <label className="block text-md font-bold text-[#0a2a5c] mb-3">Género compatible</label>
           <div className="flex flex-wrap gap-2">
             {genderOptions.map((gender) => (
               <button
@@ -300,7 +308,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleGenderSelect(gender)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.gender === gender 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -311,7 +319,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         </div>
 
         <div>
-          <h3 className="text-md font-medium text-black mb-3">Amueblado</h3>
+          <label className="block text-md font-bold text-[#0a2a5c] mb-3">Amueblado</label>
           <div className="flex flex-wrap gap-2">
             {furnishedOptions.map((option) => (
               <button
@@ -320,7 +328,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleFurnishedSelect(option)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.furnished === option 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -332,7 +340,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
 
         {filters.propertyType === "Cuarto" && (
           <div>
-            <h3 className="text-md font-medium text-black mb-3">Baño</h3>
+            <label className="block text-md font-bold text-[#0a2a5c] mb-3">Baño</label>
             <div className="flex flex-wrap gap-2">
               {bathroomTypeOptions.map((option) => (
                 <button
@@ -341,7 +349,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                   onClick={() => handleBathroomTypeSelect(option)}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     filters.bathroomType === option 
-                      ? 'bg-[#FFDC30] text-black font-medium' 
+                      ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -355,7 +363,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         {/* Nueva categoría de Cuartos */}
         {(filters.propertyType === "Casa" || filters.propertyType === "Departamento") && (
           <div>
-            <h3 className="text-md font-medium text-black mb-3">Número de cuartos</h3>
+            <label className="block text-md font-bold text-[#0a2a5c] mb-3">Número de cuartos</label>
             <div className="flex flex-wrap gap-2 items-center">
               {numberOfRoomsOptions.map((option) => (
                 <div key={option} className="flex items-center">
@@ -364,7 +372,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfRoomsSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfRooms === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -389,14 +397,14 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                           option: (provided, state) => ({
                             ...provided,
                             fontSize: '0.875rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
                             ...provided,
                             fontSize: '0.875rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             fontWeight: 600,
                           }),
                           control: (provided, state) => ({
@@ -405,7 +413,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             padding: '0 0.25rem',
                             minWidth: '56px',
                             backgroundColor: '#fff',
-                            color: '#000',
+                            color: '#0a2a5c',
                           }),
                         }}
                         theme={theme => ({
@@ -421,7 +429,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             neutral40: '#ccc',
                           }
                         })}
-                        placeholder=""
+                        placeholder="Número de cuartos"
                       />
                     </div>
                   )}
@@ -434,7 +442,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         {/* Número de baños */}
         {(filters.propertyType === "Casa" || filters.propertyType === "Departamento") && (
           <div>
-            <h3 className="text-md font-medium text-black mb-3">Número de baños</h3>
+            <label className="block text-md font-bold text-[#0a2a5c] mb-3">Número de baños</label>
             <div className="flex flex-wrap gap-2 items-center">
               {numberOfBathroomsOptions.map((option) => (
                 <div key={option} className="flex items-center">
@@ -443,7 +451,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfBathroomsSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfBathrooms === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -468,14 +476,14 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                           option: (provided, state) => ({
                             ...provided,
                             fontSize: '0.875rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
                             ...provided,
                             fontSize: '0.8rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             fontWeight: 600,
                           }),
                           control: (provided, state) => ({
@@ -484,7 +492,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             padding: '0 0.25rem',
                             minWidth: '56px',
                             backgroundColor: '#fff',
-                            color: '#000',
+                            color: '#0a2a5c',
                           }),
                         }}
                         theme={theme => ({
@@ -500,7 +508,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             neutral40: '#ccc',
                           }
                         })}
-                        placeholder=""
+                        placeholder="Número de baños"
                       />
                     </div>
                   )}
@@ -511,7 +519,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         )}
 
         <div>
-          <h3 className="text-md font-medium text-black mb-3">Servicios</h3>
+          <label className="block text-md font-bold text-[#0a2a5c] mb-3">Servicios</label>
           <div className="flex flex-wrap gap-2">
             {servicesOptions.map((option) => (
               <button
@@ -520,7 +528,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 onClick={() => handleServicesSelect(option)}
                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                   filters.services === option 
-                    ? 'bg-[#FFDC30] text-black font-medium' 
+                    ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -531,7 +539,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
           {/* Subfiltro de servicios incluidos */}
           {filters.services === "Con servicios" && (
             <div className="mt-2">
-              <h4 className="text-sm font-medium text-black mb-2">¿Qué servicios?</h4>
+              <h4 className="text-sm font-medium text-[#0a2a5c] mb-2">¿Qué servicios?</h4>
               <div className="flex flex-col gap-2">
                 {serviciosIncluidosList.map(servicio => (
                   <label key={servicio} className="flex items-center space-x-2 cursor-pointer">
@@ -547,7 +555,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                       }}
                       className="accent-[#FFDC30] w-4 h-4 rounded"
                     />
-                    <span className="text-black text-sm">{servicio}</span>
+                    <span className="text-[#0a2a5c] text-sm">{servicio}</span>
                   </label>
                 ))}
               </div>
@@ -557,10 +565,10 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         
         <div>
           <div className="flex justify-between items-center mb-1">
-            <label htmlFor="maxBudget" className="block text-sm font-medium text-black">
+            <label className="block text-md font-bold text-[#0a2a5c]">
               Presupuesto máximo
             </label>
-            <span className="text-sm font-bold text-black">
+            <span className="text-sm font-bold text-[#0a2a5c]">
               {filters.budgetFilterActive ? `$${formatPrice(filters.maxBudget)}` : "Desliza para seleccionar"}
             </span>
           </div>
@@ -584,7 +592,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         {/* Lógica condicional para Estacionamiento */}
         {filters.propertyType === "Cuarto" && (
           <div>
-            <h3 className="text-md font-medium text-black mb-3">Estacionamiento</h3>
+            <label className="block text-md font-bold text-[#0a2a5c] mb-3">Estacionamiento</label>
             <div className="flex flex-wrap gap-2">
               {parkingYesNoOptions.map((option) => (
                 <button
@@ -593,7 +601,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                   onClick={() => handleParkingSelect(option)}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     filters.parking === option 
-                      ? 'bg-[#FFDC30] text-black font-medium' 
+                      ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -606,7 +614,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
 
         {(filters.propertyType === "Casa" || filters.propertyType === "Departamento") && (
           <div>
-            <h3 className="text-md font-medium text-black mb-3">Número de lugares de estacionamiento</h3>
+            <label className="block text-md font-bold text-[#0a2a5c] mb-3">Número de lugares de estacionamiento</label>
             <div className="flex flex-wrap gap-2 items-center">
               {numberOfParkingSpacesOptions.map((option) => (
                 <div key={option} className="flex items-center">
@@ -615,7 +623,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                     onClick={() => handleNumberOfParkingSpacesSelect(option)}
                     className={`px-3 py-2 text-sm rounded-md transition-colors ${
                       filters.numberOfParkingSpaces === option && option !== "+"
-                        ? 'bg-[#FFDC30] text-black font-medium' 
+                        ? 'bg-[#ffd662] text-[#0a2a5c] font-medium' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -640,14 +648,14 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                           option: (provided, state) => ({
                             ...provided,
                             fontSize: '0.875rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             backgroundColor: state.isSelected ? '#FFDC30' : '#fff',
                             fontWeight: state.isSelected ? 600 : 400,
                           }),
                           singleValue: (provided) => ({
                             ...provided,
                             fontSize: '0.8rem',
-                            color: '#000',
+                            color: '#0a2a5c',
                             fontWeight: 600,
                           }),
                           control: (provided, state) => ({
@@ -656,7 +664,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             padding: '0 0.25rem',
                             minWidth: '56px',
                             backgroundColor: '#fff',
-                            color: '#000',
+                            color: '#0a2a5c',
                           }),
                         }}
                         theme={theme => ({
@@ -672,7 +680,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                             neutral40: '#ccc',
                           }
                         })}
-                        placeholder=""
+                        placeholder="Número de lugares"
                       />
                     </div>
                   )}
@@ -691,7 +699,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
             onChange={handlePetFriendlyChange}
             className="h-4 w-4 text-[#FFDC30] focus:ring-[#FFDC30] border-gray-300 rounded"
           />
-          <label htmlFor="petFriendly" className="ml-2 block text-sm text-black">
+          <label htmlFor="petFriendly" className="ml-2 block text-sm text-[#0a2a5c]">
             Pet Friendly
           </label>
         </div>
@@ -700,7 +708,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
           <button
             type="button"
             onClick={toggleMoreFilters}
-            className="text-sm font-medium text-black flex items-center"
+            className="text-sm font-medium text-[#0a2a5c] flex items-center"
           >
             {showMoreFilters ? 'Menos filtros' : 'Más filtros'}
             <svg 
@@ -716,7 +724,7 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
         
         {showMoreFilters && (
           <div className="mt-4">
-            <h3 className="text-md font-medium text-black mb-3">Amenidades</h3>
+            <h3 className="text-md font-medium text-[#0a2a5c] mb-3">Amenidades</h3>
             <div className="grid grid-cols-1 gap-2">
               {amenitiesList.map((amenity) => (
                 <div key={amenity} className="flex items-center">
@@ -735,6 +743,26 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
                 </div>
               ))}
             </div>
+            {/* Categoría de Seguridad */}
+            <div className="mt-6">
+              <h3 className="text-md font-medium text-[#0a2a5c] mb-3">Seguridad</h3>
+              <div className="flex flex-wrap gap-2">
+                {securityOptions.map(option => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => handleFilterChangeInternal({ securityType: filters.securityType === option ? '' : option })}
+                    className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                      filters.securityType === option
+                        ? 'bg-[#ffd662] text-[#0a2a5c] font-medium'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
         
@@ -742,9 +770,15 @@ const SearchFilters = ({ onFilterChange, activeFilters }) => {
           <button
             type="button"
             onClick={clearFilters}
-            className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-50 transition duration-300"
+            className="w-full px-4 py-2 border border-gray-300 text-[#0a2a5c] rounded-md font-medium hover:bg-gray-50 transition duration-300"
           >
             Limpiar filtros
+          </button>
+          <button
+            type="submit"
+            className="w-full md:w-auto px-8 py-3 bg-[#ffd662] text-[#0a2a5c] rounded-md font-bold text-lg shadow hover:bg-yellow-400 transition duration-300"
+          >
+            Buscar
           </button>
         </div>
       </form>

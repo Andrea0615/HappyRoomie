@@ -26,7 +26,8 @@ const PropertyComparator = ({ propertiesToCompare, onBack }) => {
 
   // Formatea el precio para mostrar comas como separadores de miles
   const formatPrice = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (typeof value !== 'number') return value;
+    return value.toLocaleString('en-US');
   };
 
   // Definir los factores clave para comparar
@@ -34,10 +35,10 @@ const PropertyComparator = ({ propertiesToCompare, onBack }) => {
     { key: 'price', label: 'Precio Mensual', format: (prop) => `$${formatPrice(prop.price)}` },
     { key: 'type', label: 'Tipo de Vivienda' },
     { key: 'furnished', label: 'Amueblado', format: (prop) => prop.features.includes('Amueblada') ? 'Sí' : 'No' },
-    { key: 'bathroom', label: 'Baño', format: (prop) => prop.type === 'Cuarto' ? (prop.features.includes('Baño privado') ? 'Propio' : 'Compartido') : `${prop.bathrooms || 0} baños` },
+    { key: 'bathroom', label: 'Baño', format: (prop) => prop.type === 'Cuarto' ? (prop.features.includes('Baño privado') ? 'Propio' : 'Compartido') : `${formatPrice(prop.bathrooms || 0)} baños` },
     { key: 'services', label: 'Servicios Incluidos', format: (prop) => prop.features.includes('Servicios incluidos') ? 'Sí' : 'No' },
     { key: 'petFriendly', label: 'Pet Friendly', format: (prop) => prop.petFriendly ? 'Sí' : 'No' },
-    { key: 'parking', label: 'Estacionamiento', format: (prop) => prop.parkingSpaces > 0 ? `${prop.parkingSpaces} lugares` : 'No' },
+    { key: 'parking', label: 'Estacionamiento', format: (prop) => prop.parkingSpaces > 0 ? `${formatPrice(prop.parkingSpaces)} lugares` : 'No' },
     { key: 'gender', label: 'Género Compatible', format: (prop) => prop.features.find(f => ['Solo hombres', 'Solo mujeres', 'Mixto'].includes(f)) || 'No especificado' },
     { key: 'rating', label: 'Calificación', format: (prop) => `${prop.rating}/5` },
     { key: 'location', label: 'Descripción Breve' },

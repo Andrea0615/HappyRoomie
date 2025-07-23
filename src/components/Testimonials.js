@@ -16,7 +16,7 @@ const Testimonials = () => {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-black">Lo que dicen nuestros usuarios</h2>
+          <h2 className="text-3xl font-bold text-[#0a2a5c]">Lo que dicen nuestros usuarios</h2>
           <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
             Estudiantes que encontraron su hogar ideal y roomies compatibles a través de Happy Rommie.
           </p>
@@ -29,7 +29,7 @@ const Testimonials = () => {
                 <img 
                   src={testimonials[currentIndex].avatar} 
                   alt={testimonials[currentIndex].name} 
-                  className="w-24 h-24 rounded-full object-cover border-4 border-[#FFDC30]"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-[#ffd662]"
                 />
               </div>
               <div>
@@ -47,7 +47,7 @@ const Testimonials = () => {
                 </div>
                 <p className="text-lg text-gray-600 italic mb-6">"{testimonials[currentIndex].text}"</p>
                 <div>
-                  <h4 className="text-xl font-bold text-black">{testimonials[currentIndex].name}</h4>
+                  <h4 className="text-xl font-bold text-[#0a2a5c]">{testimonials[currentIndex].name}</h4>
                   <p className="text-gray-600">{testimonials[currentIndex].campus} - {testimonials[currentIndex].career}</p>
                 </div>
               </div>

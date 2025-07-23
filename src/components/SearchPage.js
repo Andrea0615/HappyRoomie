@@ -89,6 +89,9 @@ const SearchPage = ({ onNavigate, initialFilters }) => {
         filtersToApply.includedServices.every(servicio => property.includedServices.includes(servicio))
       );
     }
+    if (filtersToApply.securityType) {
+      results = results.filter(property => property.securityType === filtersToApply.securityType);
+    }
     
     setFilteredProperties(results);
   };

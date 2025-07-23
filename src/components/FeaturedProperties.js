@@ -10,8 +10,8 @@ const FeaturedProperties = () => {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-black">Propiedades destacadas</h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-[#0a2a5c]">Propiedades destacadas</h2>
+          <p className="mt-4 text-lg text-[#0a2a5c] max-w-3xl mx-auto">
             Descubre las mejores opciones de alojamiento cerca del Tec de Monterrey, seleccionadas por su calidad y ubicación.
           </p>
         </div>
@@ -23,7 +23,7 @@ const FeaturedProperties = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <button className="px-6 py-3 bg-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
+          <button className="px-6 py-3 bg-[#ffd662] text-[#0a2a5c] rounded-md font-bold hover:bg-yellow-400 transition duration-300">
             Ver todas las propiedades
           </button>
         </div>
