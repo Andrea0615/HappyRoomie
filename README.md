@@ -39,6 +39,6 @@ Crear una página web funcional y segura que conecte a estudiantes con arrendado
 
 - **Frontend:** HTML, CSS, JavaScript (con diseño minimalista estilo Google, tipografía Poppins, colores blanco, negro y amarillo).
 - **Backend:** Node.js (Express).
-- **Base de datos:** MySQL/MongoDB (dependiendo del diseño final).
+- **Base de datos:** MySQL/MongoDB.
 - **Seguridad:** Validación de correos, encriptación de contraseñas y verificación de identidad.
 - **Otros:** APIs (Google Maps para ubicaciones, traducción ESP/ING, conversión de divisas MXN-USD).
