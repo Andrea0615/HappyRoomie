@@ -66,7 +66,11 @@ const App = () => {
         ) : currentPage === 'search' ? (
           <SearchPage onNavigate={handleNavigate} initialFilters={searchFilters} />
         ) : currentPage === 'propertyDetail' && selectedProperty ? (
-          <PropertyDetail property={selectedProperty} onBack={() => handleNavigate('search', null, searchFilters)} />
+          <PropertyDetail
+            property={selectedProperty}
+            onBack={() => handleNavigate('search', null, searchFilters)}
+            onGoToRequests={() => handleNavigate('dashboard')}
+          />
         ) : currentPage === 'comparePage' && propertiesToCompare.length > 0 ? (
           <PropertyComparator propertiesToCompare={propertiesToCompare} onBack={() => handleNavigate('search', null, searchFilters)} />
         ) : currentPage === 'dashboard' ? (

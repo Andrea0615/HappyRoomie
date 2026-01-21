@@ -1,6 +1,41 @@
 import React, { useState } from 'react';
 
-const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
+// Iconos SVG para los modales (mismo estilo de trazo que en Mi Perfil)
+const InfoIcon = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.8}
+    stroke="currentColor"
+    {...props}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M11.25 11.25v5.25m0-8.25h.008v.008H11.25V8.25zm.75-5.25a9 9 0 11-9 9 9.01 9.01 0 019-9z"
+    />
+  </svg>
+);
+
+const CheckCircleIcon = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.8}
+    stroke="currentColor"
+    {...props}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75l2.25 2.25L15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onBack como prop
   const { 
     title, 
     type, 
@@ -18,6 +53,8 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
   } = property;
 
   const [currentImage, setCurrentImage] = useState(0);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Si no hay imágenes adicionales, usar la imagen principal
   const allImages = images ? [image, ...images] : [image];
@@ -236,11 +273,122 @@ const PropertyDetail = ({ property, onBack }) => { // Recibe onBack como prop
           <button className="flex-1 px-6 py-3 bg-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-400 transition duration-300">
             Contactar al propietario
           </button>
-          <button className="flex-1 px-6 py-3 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300">
-            Agendar visita
+          <button
+            className="flex-1 px-6 py-3 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
+            onClick={() => setShowRequestModal(true)}
+          >
+            Hacer solicitud
           </button>
         </div>
       </div>
+
+      {/* Modal de confirmación de solicitud */}
+      {showRequestModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center">
+            {/* Botón de cierre (X) */}
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
+              onClick={() => setShowRequestModal(false)}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+
+            <div className="flex flex-col items-center gap-3 mt-2">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#fff6d1]">
+                <InfoIcon className="w-10 h-10 text-[#ffd662]" />
+              </div>
+              <h2 className="text-xl font-bold text-black">
+                Confirmar solicitud
+              </h2>
+              <p className="text-gray-700">
+                Se enviarán tus datos de contacto al arrendador para que pueda
+                evaluar tu solicitud
+                <br />
+                ¿Quieres continuar?
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                <button
+                  className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+                  onClick={() => setShowRequestModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="px-4 py-2 rounded-md bg-[#ffd662] text-black font-bold hover:bg-yellow-400 transition"
+                  onClick={() => {
+                    setShowRequestModal(false);
+                    setShowSuccessModal(true);
+                  }}
+                >
+                  Confirmar envío
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de solicitud exitosa */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center">
+            {/* Botón de cierre (X) arriba a la derecha */}
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
+              onClick={() => setShowSuccessModal(false)}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+
+            <div className="flex flex-col items-center gap-3 mt-2">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#fff6d1]">
+                <CheckCircleIcon className="w-10 h-10 text-[#ffd662]" />
+              </div>
+              <h2 className="text-xl font-bold text-black">
+                ¡Solicitud enviada!
+              </h2>
+              <p className="text-gray-700 max-w-xs">
+                Tu información fue compartida con el arrendador exitosamente y está siendo evaluada.
+              </p>
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-2 w-full max-w-xs">
+                <div className="flex">
+                  <div className="flex-shrink-0">⚠️</div>
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700 font-medium">
+                      <strong>Importante:</strong> consulta 'Mis solicitudes'
+                      para darle seguimiento .
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-col sm:flex-row gap-3 sm:justify-center w-full">
+                <button
+                  className="px-6 py-2 rounded-md border-2 border-[#ffd662] bg-white text-black font-bold hover:bg-yellow-50 transition"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    if (typeof onGoToRequests === 'function') onGoToRequests();
+                  }}
+                >
+                  Ir a Mis solicitudes
+                </button>
+                <button
+                  className="px-6 py-2 rounded-md bg-[#ffd662] text-black font-bold hover:bg-yellow-400 transition"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    if (typeof onBack === 'function') onBack();
+                  }}
+                >
+                  Seguir explorando
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
