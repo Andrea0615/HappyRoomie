@@ -55,6 +55,8 @@ const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onB
   const [currentImage, setCurrentImage] = useState(0);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showOfferSlide, setShowOfferSlide] = useState(false);
+  const [offerPrice, setOfferPrice] = useState(price || 0);
 
   // Si no hay imágenes adicionales, usar la imagen principal
   const allImages = images ? [image, ...images] : [image];
@@ -144,7 +146,7 @@ const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onB
       </div>
       
       {/* Contenido principal */}
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto p-20">
         <div className="flex justify-between items-start">
           <h1 className="text-3xl font-bold text-black">{title}</h1>
           <div className="flex items-center bg-[#ffd662] px-3 py-1 rounded-md">
@@ -275,7 +277,11 @@ const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onB
           </button>
           <button
             className="flex-1 px-6 py-3 border-2 border-[#ffd662] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
-            onClick={() => setShowRequestModal(true)}
+            onClick={() => {
+              setOfferPrice(price || 0);
+              setShowOfferSlide(false);
+              setShowRequestModal(true);
+            }}
           >
             Hacer solicitud
           </button>
@@ -285,46 +291,165 @@ const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onB
       {/* Modal de confirmación de solicitud */}
       {showRequestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center">
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full mx-50 p-28 text-center overflow-y-auto max-h-[90vh]">
             {/* Botón de cierre (X) */}
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
-              onClick={() => setShowRequestModal(false)}
+              className="absolute top-12 right-12 text-gray-500 hover:text-black text-xl font-bold z-20"
+              onClick={() => {
+                setShowRequestModal(false);
+                setShowOfferSlide(false);
+                setOfferPrice(price || 0);
+              }}
               aria-label="Cerrar"
             >
               ×
             </button>
 
-            <div className="flex flex-col items-center gap-3 mt-2">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#fff6d1]">
-                <InfoIcon className="w-10 h-10 text-[#ffd662]" />
-              </div>
-              <h2 className="text-xl font-bold text-black">
-                Confirmar solicitud
-              </h2>
-              <p className="text-gray-700">
-                Se enviarán tus datos de contacto al arrendador para que pueda
-                evaluar tu solicitud
-                <br />
-                ¿Quieres continuar?
-              </p>
+            {/* Link "hacer oferta" */}
+            {!showOfferSlide && (
+              <button
+                className="absolute top-12 left-12 text-yellow-300 hover:text-yellow-400 text-sm font-normal no-underline transition-colors z-20 cursor-pointer"
+                onClick={() => setShowOfferSlide(true)}
+                style={{ textDecoration: 'none' }}
+              >
+                hacer oferta
+              </button>
+            )}
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                <button
-                  className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
-                  onClick={() => setShowRequestModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button
-                  className="px-4 py-2 rounded-md bg-[#ffd662] text-black font-bold hover:bg-yellow-400 transition"
-                  onClick={() => {
-                    setShowRequestModal(false);
-                    setShowSuccessModal(true);
-                  }}
-                >
-                  Confirmar envío
-                </button>
+            {/* Contenedor de slides con animación */}
+            <div className="relative w-full">
+              {/* Slide 1: Confirmación normal */}
+              <div
+                className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+                  showOfferSlide ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+                }`}
+                style={{ willChange: 'transform' }}
+              >
+                <div className="flex flex-col items-center gap-3 mt-2 pb-4">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#fff6d1]">
+                    <InfoIcon className="w-10 h-10 text-[#ffd662]" />
+                  </div>
+                  <h2 className="text-xl font-bold text-black">
+                    Confirmar solicitud
+                  </h2>
+                  <p className="text-gray-700 text-center">
+                    Se enviará tu perfil al arrendador para que pueda
+                    evaluar tu solicitud
+                    <br />
+                    ¿Quieres continuar?
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center w-full mt-4">
+                    <button
+                      className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+                      onClick={() => {
+                        setShowRequestModal(false);
+                        setShowOfferSlide(false);
+                        setOfferPrice(price || 0);
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-md bg-[#ffd662] text-black font-bold hover:bg-yellow-400 transition"
+                      onClick={() => {
+                        setShowRequestModal(false);
+                        setShowOfferSlide(false);
+                        setOfferPrice(price || 0);
+                        setShowSuccessModal(true);
+                      }}
+                    >
+                      Confirmar envío
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Slide 2: Hacer oferta */}
+              <div
+                className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+                  showOfferSlide ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+                }`}
+                style={{ willChange: 'transform' }}
+              >
+                <div className="flex flex-col items-center gap-4 mt-2 pb-4">
+                  <h2 className="text-xl font-bold text-black">
+                    Hacer oferta
+                  </h2>
+                  <p className="text-gray-600 text-sm text-center">
+                    Indica el precio que deseas pagar
+                  </p>
+
+                  {/* Controles de precio */}
+                  <div className="flex items-center justify-center gap-4 mt-4 mb-4">
+                    {/* Botón menos */}
+                    <button
+                      className="w-12 h-12 rounded-full bg-white border-2 border-[#ffd662] text-[#ffd662] font-bold text-2xl hover:bg-yellow-50 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center active:scale-95"
+                      onClick={() => setOfferPrice((prev) => Math.max(0, prev - 100))}
+                      aria-label="Reducir precio"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={3}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                      </svg>
+                    </button>
+
+                    {/* Precio */}
+                    <div className="flex flex-col items-center min-w-[140px]">
+                      <div className="text-3xl font-bold text-black">
+                        ${formatPrice(offerPrice)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">/mes</div>
+                    </div>
+
+                    {/* Botón más */}
+                    <button
+                      className="w-12 h-12 rounded-full bg-[#ffd662] text-black font-bold text-2xl hover:bg-yellow-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center active:scale-95"
+                      onClick={() => setOfferPrice((prev) => prev + 100)}
+                      aria-label="Aumentar precio"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={3}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Botones de acción */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center w-full mt-4">
+                    <button
+                      className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+                      onClick={() => {
+                        setShowOfferSlide(false);
+                        setOfferPrice(price || 0);
+                      }}
+                    >
+                      Volver
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-md bg-[#ffd662] text-black font-bold hover:bg-yellow-400 transition"
+                      onClick={() => {
+                        setShowRequestModal(false);
+                        setShowOfferSlide(false);
+                        setShowSuccessModal(true);
+                      }}
+                    >
+                      Confirmar oferta
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -334,7 +459,7 @@ const PropertyDetail = ({ property, onBack, onGoToRequests }) => { // Recibe onB
       {/* Modal de solicitud exitosa */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center">
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 p-2 text-center overflow-y-auto max-h-[90vh]">
             {/* Botón de cierre (X) arriba a la derecha */}
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
