@@ -12,6 +12,7 @@ import PropertyDetail from './components/PropertyDetail';
 import PropertyComparator from './components/PropertyComparator'; // Importar el comparador
 import UserDashboard from './components/UserDashboard'; // Importar el dashboard
 import PropertyOwnerRegistration from './components/PropertyOwnerRegistration'; // Importar el registro de propietarios
+import MyProperties from './components/MyProperties'; // Importar Mis propiedades
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -77,6 +78,8 @@ const App = () => {
           <UserDashboard onBack={() => handleNavigate('home')} fromRegistration={fromRegistration} />
         ) : currentPage === 'propertyOwnerRegistration' ? (
           <PropertyOwnerRegistration onBack={() => handleNavigate('home')} />
+        ) : currentPage === 'myProperties' ? (
+          <MyProperties onNavigate={handleNavigate} />
         ) : null}
       </main>
       

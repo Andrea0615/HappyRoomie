@@ -4,6 +4,7 @@ import RegistrationModal from './RegistrationModal';
 const Navbar = ({ currentPage, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [isPropertiesDropdownOpen, setIsPropertiesDropdownOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -56,7 +57,45 @@ const Navbar = ({ currentPage, onNavigate }) => {
             >
               Buscar propiedades
             </a>
-            <a href="#" className="px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsPropertiesDropdownOpen(true)}
+              onMouseLeave={() => setIsPropertiesDropdownOpen(false)}
+            >
+              <a 
+                href="#" 
+                onClick={() => onNavigate('myProperties')}
+                className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'myProperties' ? 'bg-yellow-100' : ''}`}
+              >
+                Mis propiedades
+              </a>
+              {isPropertiesDropdownOpen && (
+                <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // Navegar a Mis inquilinos (puedes crear esta página después)
+                      setIsPropertiesDropdownOpen(false);
+                    }}
+                    className="block px-4 py-2 text-black hover:bg-yellow-100 rounded-t-md font-medium transition duration-150"
+                  >
+                    Mis inquilinos
+                  </a>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // Navegar a Mis solicitudes (puedes crear esta página después)
+                      setIsPropertiesDropdownOpen(false);
+                    }}
+                    className="block px-4 py-2 text-black hover:bg-yellow-100 rounded-b-md font-medium transition duration-150"
+                  >
+                    Mis solicitudes
+                  </a>
+                </div>
+              )}
+            </div>
             <button 
               onClick={() => onNavigate('dashboard')}
               className={`px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
@@ -117,7 +156,36 @@ const Navbar = ({ currentPage, onNavigate }) => {
             >
               Buscar propiedades
             </a>
-            <a href="#" className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium">Contacto</a>
+            <a 
+              href="#" 
+              onClick={() => {
+                onNavigate('myProperties');
+                setIsMenuOpen(false);
+              }}
+              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'myProperties' ? 'bg-yellow-100' : ''}`}
+            >
+              Mis propiedades
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+              }}
+              className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium"
+            >
+              Mis inquilinos
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+              }}
+              className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium"
+            >
+              Mis solicitudes
+            </a>
             <button 
               onClick={() => {
                 onNavigate('dashboard');
