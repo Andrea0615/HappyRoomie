@@ -12,6 +12,7 @@ import PropertyDetail from './components/PropertyDetail';
 import PropertyComparator from './components/PropertyComparator'; // Importar el comparador
 import UserDashboard from './components/UserDashboard'; // Importar el dashboard
 import PropertyOwnerRegistration from './components/PropertyOwnerRegistration'; // Importar el registro de propietarios
+import RequestsDashboard from './components/RequestsDashboard'; // Importar el dashboard de solicitudes
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -69,12 +70,14 @@ const App = () => {
           <PropertyDetail
             property={selectedProperty}
             onBack={() => handleNavigate('search', null, searchFilters)}
-            onGoToRequests={() => handleNavigate('dashboard')}
+            onGoToRequests={() => handleNavigate('requests')}
           />
         ) : currentPage === 'comparePage' && propertiesToCompare.length > 0 ? (
           <PropertyComparator propertiesToCompare={propertiesToCompare} onBack={() => handleNavigate('search', null, searchFilters)} />
         ) : currentPage === 'dashboard' ? (
           <UserDashboard onBack={() => handleNavigate('home')} fromRegistration={fromRegistration} />
+        ) : currentPage === 'requests' ? (
+          <RequestsDashboard onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />
         ) : currentPage === 'propertyOwnerRegistration' ? (
           <PropertyOwnerRegistration onBack={() => handleNavigate('home')} />
         ) : null}
