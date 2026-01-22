@@ -75,7 +75,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      // Navegar a Mis inquilinos (puedes crear esta página después)
+                      onNavigate('myTenants');
                       setIsPropertiesDropdownOpen(false);
                     }}
                     className="block px-4 py-2 text-black hover:bg-yellow-100 rounded-t-md font-medium transition duration-150"
@@ -86,7 +86,7 @@ const Navbar = ({ currentPage, onNavigate }) => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      // Navegar a Mis solicitudes (puedes crear esta página después)
+                      onNavigate('myRequests');
                       setIsPropertiesDropdownOpen(false);
                     }}
                     className="block px-4 py-2 text-black hover:bg-yellow-100 rounded-b-md font-medium transition duration-150"
@@ -170,9 +170,10 @@ const Navbar = ({ currentPage, onNavigate }) => {
               href="#" 
               onClick={(e) => {
                 e.preventDefault();
+                onNavigate('myTenants');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium"
+              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'myTenants' ? 'bg-yellow-100' : ''}`}
             >
               Mis inquilinos
             </a>
@@ -180,9 +181,10 @@ const Navbar = ({ currentPage, onNavigate }) => {
               href="#" 
               onClick={(e) => {
                 e.preventDefault();
+                onNavigate('myRequests');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium"
+              className={`block px-3 py-2 text-black hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'myRequests' ? 'bg-yellow-100' : ''}`}
             >
               Mis solicitudes
             </a>
