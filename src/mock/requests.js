@@ -102,8 +102,9 @@ export const offers = [
     propertyImage: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80",
     originalPrice: 4500,
     offeredPrice: 4000,
-    status: "pendiente", // pendiente, aceptada, rechazada, contraoferta
+    status: "en_proceso", // en_proceso, aceptada, rechazada
     counterOffers: [], // Array de contraofertas (máximo 2)
+    isCounterOffer: false, // Indica si hay una contraoferta activa
     student: {
       id: 101,
       name: "María González Pérez",
@@ -113,7 +114,9 @@ export const offers = [
       university: "Tecnológico de Monterrey",
       major: "Ingeniería Industrial",
       email: "maria.gonzalez@tec.mx",
-      phone: "+52 81 1111 2222"
+      phone: "+52 81 1111 2222",
+      address: "Calle Nueva 456, Col. Centro",
+      city: "Monterrey, NL"
     },
     offerDate: "2025-10-15",
     message: "¿Sería posible negociar el precio a $4,000 mensuales?"
@@ -126,7 +129,7 @@ export const offers = [
     propertyImage: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=1380&q=80",
     originalPrice: 12500,
     offeredPrice: 11000,
-    status: "contraoferta",
+    status: "en_proceso",
     counterOffers: [
       {
         id: 1,
@@ -135,6 +138,7 @@ export const offers = [
         message: "Puedo ofrecer $11,500 mensuales"
       }
     ],
+    isCounterOffer: true, // Hay una contraoferta activa
     student: {
       id: 102,
       name: "Juan Carlos Silva",
@@ -144,9 +148,102 @@ export const offers = [
       university: "Tecnológico de Monterrey",
       major: "Arquitectura",
       email: "juan.silva@tec.mx",
-      phone: "+52 81 2222 3333"
+      phone: "+52 81 2222 3333",
+      address: "Av. Universidad 789, Col. Tecnológico",
+      city: "Monterrey, NL"
     },
     offerDate: "2025-10-14",
     message: "¿Podríamos negociar a $11,000? Es mi presupuesto máximo."
+  },
+  {
+    id: 3,
+    propertyId: 3,
+    propertyTitle: "Estudio moderno cerca del Tec",
+    propertyImage: "https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+    originalPrice: 8000,
+    offeredPrice: 7500,
+    status: "aceptada",
+    counterOffers: [],
+    isCounterOffer: false,
+    student: {
+      id: 103,
+      name: "Laura Martínez",
+      profilePhoto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      age: 21,
+      studentId: "A01234572",
+      university: "Tecnológico de Monterrey",
+      major: "Diseño Gráfico",
+      email: "laura.martinez@tec.mx",
+      phone: "+52 81 3333 4444",
+      address: "Blvd. Constitución 123, Col. San Pedro",
+      city: "Monterrey, NL"
+    },
+    offerDate: "2025-10-12",
+    message: "Me interesa mucho el estudio, ¿aceptarías $7,500?"
+  },
+  {
+    id: 4,
+    propertyId: 4,
+    propertyTitle: "Casa compartida para 4 estudiantes",
+    propertyImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1469&q=80",
+    originalPrice: 15000,
+    offeredPrice: 13000,
+    status: "rechazada",
+    counterOffers: [],
+    isCounterOffer: false,
+    student: {
+      id: 104,
+      name: "Pedro Ramírez",
+      profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      age: 23,
+      studentId: "A01234573",
+      university: "Tecnológico de Monterrey",
+      major: "Ingeniería Mecánica",
+      email: "pedro.ramirez@tec.mx",
+      phone: "+52 81 4444 5555",
+      address: "Calle Principal 321, Col. Del Valle",
+      city: "Monterrey, NL"
+    },
+    offerDate: "2025-10-08",
+    message: "¿Podrías considerar $13,000 mensuales?"
+  },
+  {
+    id: 5,
+    propertyId: 5,
+    propertyTitle: "Habitación con baño privado",
+    propertyImage: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80",
+    originalPrice: 5500,
+    offeredPrice: 5000,
+    status: "en_proceso",
+    counterOffers: [
+      {
+        id: 1,
+        price: 5200,
+        date: "2025-10-17",
+        message: "Te ofrezco $5,200 mensuales"
+      },
+      {
+        id: 2,
+        price: 5100,
+        date: "2025-10-18",
+        message: "Mi última oferta es $5,100"
+      }
+    ],
+    isCounterOffer: true,
+    student: {
+      id: 105,
+      name: "Ana Sofía López",
+      profilePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      age: 19,
+      studentId: "A01234574",
+      university: "Tecnológico de Monterrey",
+      major: "Medicina",
+      email: "ana.lopez@tec.mx",
+      phone: "+52 81 5555 6666",
+      address: "Calle Reforma 789, Col. Centro",
+      city: "Monterrey, NL"
+    },
+    offerDate: "2025-10-16",
+    message: "Estoy muy interesada, ¿aceptarías $5,000?"
   }
 ];
