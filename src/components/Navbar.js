@@ -64,6 +64,12 @@ const Navbar = ({ currentPage, onNavigate }) => {
               Mi Perfil
             </button>
             <button 
+              onClick={() => onNavigate('registrarPropiedad')}
+              className={`px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'registrarPropiedad' ? 'bg-yellow-100' : ''}`}
+            >
+              Registrar mi propiedad
+            </button>
+            <button 
               onClick={handleRegistrationClick}
               className="px-4 py-2 border-2 border-[#FFDC30] text-black rounded-md font-bold hover:bg-yellow-100 transition duration-300"
             >
@@ -126,6 +132,15 @@ const Navbar = ({ currentPage, onNavigate }) => {
               className={`w-full text-left px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'dashboard' ? 'bg-yellow-100' : ''}`}
             >
               Mi Perfil
+            </button>
+            <button 
+              onClick={() => {
+                onNavigate('registrarPropiedad');
+                setIsMenuOpen(false);
+              }}
+              className={`w-full text-left px-3 py-2 text-[#0a2a5c] hover:bg-yellow-100 rounded-md font-medium ${currentPage === 'registrarPropiedad' ? 'bg-yellow-100' : ''}`}
+            >
+              Registrar mi propiedad
             </button>
             <button 
               onClick={handleRegistrationClick}
