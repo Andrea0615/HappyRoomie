@@ -105,7 +105,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
 
   const FURNITURE_OPTIONS = ["Escritorio", "Cama", "Silla", "Espejo de cuerpo completo", "Armario"];
   const AMENITIES = [
-    "Casa Club",
+    "Clubhouse",
     "Alberca",
     "Gym",
     "Jardín",
@@ -169,13 +169,17 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     genderCompatible: "",
     amenities: [],
     amenidadesCasa: [],
+    tieneCasaClub: false,
     amenidadesCasaClub: [],
     amenidadesCasaOtro: "",
     amenidadesCasaClubOtro: "",
     espaciosComunes: [],
     espaciosComunesOtro: "",
     securityType: "",
-    photos: [],
+    photos: [], // General house photos
+    fotosHabitaciones: [], // Room and bathroom photos
+    fotosAreasComunes: [], // Common areas photos (building/condominium)
+    fotoCasaClub: null, // Casa Club photo
     estadoSearch: "",
   });
 
@@ -273,81 +277,6 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       });
     }
 
-    // Add "How many rooms to rent individually" step for Cuarto (right after dentroDe)
-    if (data.propertyType === "Cuarto") {
-      base.push({
-        key: "numRoomsToRent",
-        title: "¿Cuántas habitaciones deseas rentar individualmente?",
-        canContinue: data.numRoomsToRent >= 1 && data.numRoomsToRent <= 5 ? true : (data.numRoomsToRent >= 6),
-        render: () => (
-          <div className="space-y-4">
-            <ChoiceGrid
-              value={data.numRoomsToRent <= 5 ? data.numRoomsToRent.toString() : "5 or more"}
-              onChange={(v) => {
-                if (v === "5 or more") {
-                  setData((d) => ({ ...d, numRoomsToRent: 6 }));
-                } else {
-                  setData((d) => ({ ...d, numRoomsToRent: parseInt(v, 10) }));
-                }
-              }}
-              cols={3}
-              options={[
-                { value: "1", label: "1" },
-                { value: "2", label: "2" },
-                { value: "3", label: "3" },
-                { value: "4", label: "4" },
-                { value: "5", label: "5" },
-                { value: "5 or more", label: "5 o más" },
-              ]}
-            />
-            {data.numRoomsToRent >= 6 && (
-              <div>
-                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones?</label>
-                <input
-                  type="number"
-                  min={6}
-                  value={data.numRoomsToRent}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10) || 6;
-                    setData((d) => ({ ...d, numRoomsToRent: value, registerRoomDetails: null, rooms: [], currentRoomIndex: 0 }));
-                  }}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
-                  placeholder="Escribe el número"
-                />
-              </div>
-            )}
-          </div>
-        ),
-      });
-    }
-
-    // Add number of rooms step for Casa/Departamento
-    if (data.propertyType === "Casa" || data.propertyType === "Departamento") {
-      base.push({
-        key: "numRooms",
-        title: "¿Cuántas habitaciones tiene?",
-        canContinue: data.numRooms >= 1,
-        render: () => (
-          <div className="flex items-center justify-center gap-3">
-            <button
-              type="button"
-              className="w-10 h-10 rounded-full border border-gray-200 hover:border-gray-300"
-              onClick={() => setData((d) => ({ ...d, numRooms: Math.max(1, d.numRooms - 1) }))}
-            >
-              −
-            </button>
-            <div className="text-xl font-bold text-[#0a2a5c]">{data.numRooms}</div>
-            <button
-              type="button"
-              className="w-10 h-10 rounded-full border border-gray-200 hover:border-gray-300"
-              onClick={() => setData((d) => ({ ...d, numRooms: Math.min(20, d.numRooms + 1) }))}
-            >
-              +
-            </button>
-          </div>
-        ),
-      });
-    }
 
     base.push({
       key: "campus",
@@ -544,6 +473,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                   />
                 </div>
               </div>
+              <p className="text-xs text-gray-500 mt-2">Puedes escribir un precio mayor a $30,000 directamente en el cuadro</p>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-gray-600">
@@ -574,6 +504,55 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
           </div>
         );
       },
+      });
+    }
+
+
+    // Add "How many rooms to rent individually" step for Cuarto (after price step)
+    if (data.propertyType === "Cuarto") {
+      base.push({
+        key: "numRoomsToRent",
+        title: "¿Cuántas habitaciones deseas rentar individualmente?",
+        canContinue: data.numRoomsToRent >= 1 && data.numRoomsToRent <= 5 ? true : (data.numRoomsToRent >= 6),
+        render: () => (
+          <div className="space-y-4">
+            <ChoiceGrid
+              value={data.numRoomsToRent <= 5 ? data.numRoomsToRent.toString() : "5 or more"}
+              onChange={(v) => {
+                if (v === "5 or more") {
+                  setData((d) => ({ ...d, numRoomsToRent: 6 }));
+                } else {
+                  setData((d) => ({ ...d, numRoomsToRent: parseInt(v, 10) }));
+                }
+              }}
+              cols={3}
+              options={[
+                { value: "1", label: "1" },
+                { value: "2", label: "2" },
+                { value: "3", label: "3" },
+                { value: "4", label: "4" },
+                { value: "5", label: "5" },
+                { value: "5 or more", label: "5 o más" },
+              ]}
+            />
+            {data.numRoomsToRent >= 6 && (
+              <div>
+                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones?</label>
+                <input
+                  type="number"
+                  min={6}
+                  value={data.numRoomsToRent}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10) || 6;
+                    setData((d) => ({ ...d, numRoomsToRent: value, registerRoomDetails: null, rooms: [], currentRoomIndex: 0 }));
+                  }}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                  placeholder="Escribe el número"
+                />
+              </div>
+            )}
+          </div>
+        ),
       });
     }
 
@@ -652,6 +631,51 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     });
 
     base.push({
+      key: "genderCompatible",
+      title: "Género compatible",
+      canContinue: !!data.genderCompatible,
+      render: () => (
+        <ChoiceGrid
+          value={data.genderCompatible}
+          onChange={(v) => setData((d) => ({ ...d, genderCompatible: v }))}
+          cols={3}
+          options={[
+            {
+              value: "Solo hombres",
+              label: "Solo hombres",
+              icon: (
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
+                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M16 3h5v5m0-5-6 6M11 7a6 6 0 1 0 0 12 6 6 0 0 0 0-12z" />
+                </svg>
+              ),
+            },
+            {
+              value: "Solo mujeres",
+              label: "Solo mujeres",
+              icon: (
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
+                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                </svg>
+              ),
+            },
+            {
+              value: "Mixto",
+              label: "Mixto",
+              icon: (
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
+                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              ),
+            },
+          ]}
+        />
+      ),
+    });
+
+    base.push({
       key: "petFriendly",
       title: "¿Es Pet Friendly?",
       subtitle: "(¿Se admiten mascotas?)",
@@ -706,6 +730,38 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
         </div>
       ),
     });
+
+    // Add number of rooms step for Casa/Departamento (after pet friendly)
+    if (data.propertyType === "Casa" || data.propertyType === "Departamento") {
+      base.push({
+        key: "numRooms",
+        title: "¿Cuántas habitaciones tiene?",
+        canContinue: data.numRooms >= 1,
+        render: () => (
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              className="w-10 h-10 rounded-full border border-gray-200 hover:border-gray-300"
+              onClick={() => setData((d) => ({ ...d, numRooms: Math.max(1, d.numRooms - 1) }))}
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5 mx-auto" fill="none" stroke="currentColor">
+                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+              </svg>
+            </button>
+            <div className="text-3xl font-bold text-[#0a2a5c] min-w-[60px] text-center">{data.numRooms}</div>
+            <button
+              type="button"
+              className="w-10 h-10 rounded-full border border-gray-200 hover:border-gray-300"
+              onClick={() => setData((d) => ({ ...d, numRooms: Math.min(20, d.numRooms + 1) }))}
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5 mx-auto" fill="none" stroke="currentColor">
+                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        ),
+      });
+    }
 
     if (data.propertyType === "Casa" || data.propertyType === "Departamento" || data.propertyType === "Loft") {
       base.push({
@@ -828,65 +884,96 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       });
     }
 
+    // First step: Amenities of the house
     base.push({
-      key: "genderCompatible",
-      title: "Género compatible",
-      canContinue: !!data.genderCompatible,
+      key: "amenitiesHouse",
+      title: "Amenidades de la casa",
+      canContinue: true,
       render: () => (
-        <ChoiceGrid
-          value={data.genderCompatible}
-          onChange={(v) => setData((d) => ({ ...d, genderCompatible: v }))}
-          cols={3}
-          options={[
-            {
-              value: "Solo hombres",
-              label: "Solo hombres",
-              icon: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M16 3h5v5m0-5-6 6M11 7a6 6 0 1 0 0 12 6 6 0 0 0 0-12z" />
-                </svg>
-              ),
-            },
-            {
-              value: "Solo mujeres",
-              label: "Solo mujeres",
-              icon: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 21v-4m0 0a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-3 4h6" />
-                </svg>
-              ),
-            },
-            {
-              value: "Mixto",
-              label: "Mixto",
-              icon: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 20c0-3 2-5 5-5s5 2 5 5M9 7a3 3 0 1 0 6 0 3 3 0 0 0-6 0z" />
-                </svg>
-              ),
-            },
-          ]}
-        />
+        <div className="space-y-4">
+          <CheckboxList
+            options={AMENIDADES_CASA}
+            values={data.amenidadesCasa}
+            onToggle={(opt) =>
+              setData((d) => ({
+                ...d,
+                amenidadesCasa: d.amenidadesCasa.includes(opt)
+                  ? d.amenidadesCasa.filter((x) => x !== opt)
+                  : [...d.amenidadesCasa, opt],
+              }))
+            }
+          />
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-[#0a2a5c] mb-2">Otra</label>
+            <input
+              type="text"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+              placeholder="Escribe otra amenidad"
+              value={data.amenidadesCasaOtro}
+              onChange={(e) => setData((d) => ({ ...d, amenidadesCasaOtro: e.target.value }))}
+            />
+          </div>
+        </div>
       ),
     });
 
+    // Second step: Amenities of building/community (clubhouse/building)
     base.push({
-      key: "amenities",
-      title: "Amenidades",
+      key: "amenitiesCommon",
+      title: "Amenidades del edificio / condominio",
       canContinue: true,
       render: () => (
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Amenidades de la casa</label>
+            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Tiene Casa Club?</label>
+            <YesNo
+              value={data.tieneCasaClub}
+              onChange={(v) => {
+                setData((d) => ({
+                  ...d,
+                  tieneCasaClub: v,
+                  amenidadesCasaClub: v ? d.amenidadesCasaClub : [],
+                  amenidadesCasaClubOtro: v ? d.amenidadesCasaClubOtro : "",
+                  fotoCasaClub: v ? d.fotoCasaClub : null,
+                }));
+              }}
+            />
+            {data.tieneCasaClub && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto del Casa Club (opcional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setData((d) => ({ ...d, fotoCasaClub: file }));
+                  }}
+                  className="w-full"
+                />
+                {data.fotoCasaClub && (
+                  <div className="mt-2">
+                    <img
+                      src={URL.createObjectURL(data.fotoCasaClub)}
+                      alt="Casa Club preview"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Amenidades</label>
             <CheckboxList
-              options={AMENIDADES_CASA}
-              values={data.amenidadesCasa}
+              options={AMENIDADES_CASA_CLUB}
+              values={data.amenidadesCasaClub}
               onToggle={(opt) =>
                 setData((d) => ({
                   ...d,
-                  amenidadesCasa: d.amenidadesCasa.includes(opt)
-                    ? d.amenidadesCasa.filter((x) => x !== opt)
-                    : [...d.amenidadesCasa, opt],
+                  amenidadesCasaClub: d.amenidadesCasaClub.includes(opt)
+                    ? d.amenidadesCasaClub.filter((x) => x !== opt)
+                    : [...d.amenidadesCasaClub, opt],
                 }))
               }
             />
@@ -896,60 +983,36 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                 type="text"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
                 placeholder="Escribe otra amenidad"
-                value={data.amenidadesCasaOtro}
-                onChange={(e) => setData((d) => ({ ...d, amenidadesCasaOtro: e.target.value }))}
+                value={data.amenidadesCasaClubOtro}
+                onChange={(e) => setData((d) => ({ ...d, amenidadesCasaClubOtro: e.target.value }))}
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Casa Club</label>
-            <div className="space-y-3">
-              <label className="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition border-gray-200 bg-white hover:border-gray-300">
-                <input
-                  type="checkbox"
-                  checked={data.amenities.includes("Casa Club")}
-                  onChange={(e) => {
-                    setData((d) => ({
-                      ...d,
-                      amenities: e.target.checked
-                        ? [...d.amenities, "Casa Club"]
-                        : d.amenities.filter((x) => x !== "Casa Club"),
-                      amenidadesCasaClub: e.target.checked ? d.amenidadesCasaClub : [],
-                      amenidadesCasaClubOtro: e.target.checked ? d.amenidadesCasaClubOtro : "",
-                    }));
-                  }}
-                  className="accent-[#FFDC30] w-4 h-4"
-                />
-                <span className="text-sm text-[#0a2a5c]">Casa Club</span>
-              </label>
-              {data.amenities.includes("Casa Club") && (
-                <div className="ml-4 mt-2 space-y-3">
-                  <CheckboxList
-                    options={AMENIDADES_CASA_CLUB}
-                    values={data.amenidadesCasaClub}
-                    onToggle={(opt) =>
-                      setData((d) => ({
-                        ...d,
-                        amenidadesCasaClub: d.amenidadesCasaClub.includes(opt)
-                          ? d.amenidadesCasaClub.filter((x) => x !== opt)
-                          : [...d.amenidadesCasaClub, opt],
-                      }))
-                    }
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Fotos de áreas comunes (opcional)</label>
+            <p className="text-xs text-gray-600 mb-3">Sube fotos de las áreas comunes del edificio o condominio</p>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setData((d) => ({ ...d, fotosAreasComunes: Array.from(e.target.files || []) }))}
+              className="w-full"
+            />
+            {data.fotosAreasComunes.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {data.fotosAreasComunes.slice(0, 6).map((f, idx) => (
+                  <img
+                    key={`${f.name}-${idx}`}
+                    src={URL.createObjectURL(f)}
+                    alt="preview"
+                    className="w-full h-24 object-cover rounded-lg"
                   />
-                  <div>
-                    <label className="block text-sm font-medium text-[#0a2a5c] mb-2">Otra</label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
-                      placeholder="Escribe otra amenidad"
-                      value={data.amenidadesCasaClubOtro}
-                      onChange={(e) => setData((d) => ({ ...d, amenidadesCasaClubOtro: e.target.value }))}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 mt-2">Puedes subirlas después.</div>
+            )}
           </div>
         </div>
       ),
@@ -976,12 +1039,14 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       ),
     });
 
+    // General house photos step
     base.push({
       key: "photos",
-      title: "Fotos (opcional)",
+      title: "Fotos generales de la casa",
       canContinue: true,
       render: () => (
         <div className="space-y-3">
+          <p className="text-sm text-gray-600 mb-3">Sube fotos de la casa en general</p>
           <input
             type="file"
             accept="image/*"
@@ -992,6 +1057,39 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
           {data.photos.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
               {data.photos.slice(0, 6).map((f, idx) => (
+                <img
+                  key={`${f.name}-${idx}`}
+                  src={URL.createObjectURL(f)}
+                  alt="preview"
+                  className="w-full h-24 object-cover rounded-lg"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">Puedes subirlas después.</div>
+          )}
+        </div>
+      ),
+    });
+
+    // Room and bathroom photos step
+    base.push({
+      key: "fotosHabitaciones",
+      title: "Fotos de habitaciones y baños",
+      canContinue: true,
+      render: () => (
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600 mb-3">Sube fotos de las habitaciones y baños</p>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => setData((d) => ({ ...d, fotosHabitaciones: Array.from(e.target.files || []) }))}
+            className="w-full"
+          />
+          {data.fotosHabitaciones.length > 0 ? (
+            <div className="grid grid-cols-3 gap-2">
+              {data.fotosHabitaciones.slice(0, 6).map((f, idx) => (
                 <img
                   key={`${f.name}-${idx}`}
                   src={URL.createObjectURL(f)}
@@ -1410,6 +1508,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     data.genderCompatible,
     data.amenities,
     data.amenidadesCasa,
+    data.tieneCasaClub,
     data.amenidadesCasaClub,
     data.amenidadesCasaOtro,
     data.amenidadesCasaClubOtro,
@@ -1417,6 +1516,9 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     data.espaciosComunesOtro,
     data.securityType,
     data.photos,
+    data.fotosHabitaciones,
+    data.fotosAreasComunes,
+    data.fotoCasaClub,
     data.description,
   ]);
 
@@ -1448,7 +1550,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     data.amenidadesCasa.forEach((a) => features.push(a));
     
     // Agregar Casa Club si está seleccionado
-    if (data.amenities.includes("Casa Club")) {
+    if (data.tieneCasaClub) {
       features.push("Casa Club");
       // Agregar amenidades de casa club
       data.amenidadesCasaClub.forEach((a) => features.push(a));
