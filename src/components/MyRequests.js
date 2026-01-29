@@ -19,6 +19,23 @@ const MyRequests = ({ onNavigate }) => {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [showCounterOfferModal, setShowCounterOfferModal] = useState(null);
   const [counterOfferPrice, setCounterOfferPrice] = useState('');
+  const [showRejectModal, setShowRejectModal] = useState(null); // { type: 'request' | 'offer', id: number }
+  const [selectedRejectReason, setSelectedRejectReason] = useState('');
+
+  // Razones predeterminadas para rechazar
+  const requestRejectReasons = [
+    'El perfil no hace match con los roomies actuales',
+    'Los valores no están alineados',
+    'Pocas o malas reseñas de otros anfitriones',
+    'Sospecha de fiestas o mal uso del alojamiento',
+    'La habitación/casa fue reservada por fuera de la aplicación'
+  ];
+
+  const offerRejectReasons = [
+    'Oferta muy baja',
+    'Oferta inaceptable',
+    'Prefiero no decir'
+  ];
 
   // Filtrar solicitudes por estado
   const filteredRequests = requests.filter(req => {
@@ -55,8 +72,8 @@ const MyRequests = ({ onNavigate }) => {
   };
 
   const handleRejectRequest = (requestId) => {
-    console.log('Rechazar solicitud:', requestId);
-    // Aquí iría la lógica para rechazar la solicitud
+    setShowRejectModal({ type: 'request', id: requestId });
+    setSelectedRejectReason('');
   };
 
   const handleAcceptOffer = (offerId) => {
@@ -65,8 +82,32 @@ const MyRequests = ({ onNavigate }) => {
   };
 
   const handleRejectOffer = (offerId) => {
-    console.log('Rechazar oferta:', offerId);
-    // Aquí iría la lógica para rechazar la oferta
+    setShowRejectModal({ type: 'offer', id: offerId });
+    setSelectedRejectReason('');
+  };
+
+  const handleConfirmReject = () => {
+    if (!showRejectModal || !selectedRejectReason) {
+      alert('Por favor selecciona una razón para el rechazo');
+      return;
+    }
+
+    if (showRejectModal.type === 'request') {
+      console.log('Rechazar solicitud:', {
+        requestId: showRejectModal.id,
+        reason: selectedRejectReason
+      });
+      // Aquí iría la lógica para rechazar la solicitud con la razón
+    } else {
+      console.log('Rechazar oferta:', {
+        offerId: showRejectModal.id,
+        reason: selectedRejectReason
+      });
+      // Aquí iría la lógica para rechazar la oferta con la razón
+    }
+
+    setShowRejectModal(null);
+    setSelectedRejectReason('');
   };
 
   const handleCounterOffer = (offer) => {
@@ -712,6 +753,66 @@ const MyRequests = ({ onNavigate }) => {
                   className="flex-1 px-4 py-2 bg-[#ffd662] text-black rounded-md font-semibold hover:bg-yellow-400 transition duration-300"
                 >
                   Enviar contraoferta
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de rechazo */}
+        {showRejectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-black mb-4">
+                {showRejectModal.type === 'request' ? 'Rechazar Solicitud' : 'Rechazar Oferta'}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Por favor selecciona una razón para el rechazo:
+              </p>
+              
+              <div className="mb-4 space-y-2 max-h-64 overflow-y-auto">
+                {(showRejectModal.type === 'request' ? requestRejectReasons : offerRejectReasons).map((reason, index) => (
+                  <label
+                    key={index}
+                    className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition duration-300 ${
+                      selectedRejectReason === reason
+                        ? 'border-[#ffd662] bg-yellow-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="rejectReason"
+                      value={reason}
+                      checked={selectedRejectReason === reason}
+                      onChange={(e) => setSelectedRejectReason(e.target.value)}
+                      className="mr-3 w-4 h-4 text-[#ffd662] focus:ring-[#ffd662]"
+                    />
+                    <span className="text-sm text-black">{reason}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowRejectModal(null);
+                    setSelectedRejectReason('');
+                  }}
+                  className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-100 transition duration-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmReject}
+                  disabled={!selectedRejectReason}
+                  className={`flex-1 px-4 py-2 rounded-md font-semibold transition duration-300 ${
+                    selectedRejectReason
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Confirmar rechazo
                 </button>
               </div>
             </div>
