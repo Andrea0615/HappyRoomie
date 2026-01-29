@@ -25,9 +25,15 @@ const DocumentIcon = (props) => (
   </svg>
 );
 
-// Componente de barra de progreso
+const EmailIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+  </svg>
+);
+
+// Componente de barra de progreso para solicitudes
 const ProgressBar = ({ estado, tieneOferta = false }) => {
-  const estados = ['Pendiente'];
+  const estados = ['En proceso'];
   if (tieneOferta) {
     estados.push('Oferta aceptada');
   }
@@ -101,8 +107,80 @@ const ProgressBar = ({ estado, tieneOferta = false }) => {
   );
 };
 
+// Componente de barra de progreso para ofertas
+const OfferProgressBar = ({ estado }) => {
+  const estados = ['En proceso', 'Rechazada', 'Aceptada'];
+
+  const getEstadoIndex = () => {
+    if (estado === 'pendiente') return 0;
+    if (estado === 'rechazada') return 1;
+    if (estado === 'aceptada' || estado === 'oferta_aceptada') return 2;
+    return 0;
+  };
+
+  const currentIndex = getEstadoIndex();
+
+  return (
+    <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="relative">
+        {/* Línea de progreso */}
+        <div className="absolute top-3 left-0 right-0 h-0.5 bg-gray-200">
+          <div 
+            className="h-full bg-[#ffd662] transition-all duration-300"
+            style={{ width: `${(currentIndex / (estados.length - 1)) * 100}%` }}
+          />
+        </div>
+
+        {/* Puntos de parada */}
+        <div className="relative flex justify-between">
+          {estados.map((estadoNombre, index) => {
+            const isActive = index <= currentIndex;
+            const isCurrent = index === currentIndex;
+            
+            return (
+              <div key={index} className="flex flex-col items-center" style={{ flex: 1 }}>
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                    isActive
+                      ? 'bg-[#ffd662] border-[#ffd662]'
+                      : 'bg-white border-gray-300'
+                  }`}
+                >
+                  {isActive && (
+                    <svg
+                      className="w-4 h-4 text-black"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <span
+                  className={`mt-2 text-xs font-medium text-center ${
+                    isCurrent ? 'text-[#ffd662] font-bold' : isActive ? 'text-gray-700' : 'text-gray-400'
+                  }`}
+                >
+                  {estadoNombre}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const RequestsDashboard = ({ onBack, onNavigate }) => {
-  const [statusFilter, setStatusFilter] = useState('pendientes'); // 'pendientes' o 'aprobadas'
+  const [activeTab, setActiveTab] = useState('solicitudes'); // 'solicitudes' o 'ofertas'
+  const [statusFilter, setStatusFilter] = useState('todas'); // 'todas', 'en_proceso', 'aprobadas', 'rechazadas'
+  const [ofertasFilter, setOfertasFilter] = useState('todas'); // 'todas', 'en_proceso', 'rechazada', 'aceptada'
+  const [sortBy, setSortBy] = useState(''); // 'fecha-asc', 'fecha-desc', 'precio-desc', 'precio-asc'
 
   // Datos reorganizados en 3 secciones
   // 1. Pendientes: solicitudes y ofertas pendientes (aún no aprobadas)
@@ -291,7 +369,7 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
     }
   };
 
-  const PropertyCardWithProgress = ({ property, item }) => {
+  const PropertyCardWithProgress = ({ property, item, activeTab }) => {
     const tieneOferta = item.tieneOferta || (item.tipo === 'oferta');
     const estado = item.estado;
     const { id, title, type: propertyType, price, location, image, features, rating, isVerified, bathrooms, petFriendly } = property;
@@ -319,7 +397,10 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
 
     return (
       <div className="flex-shrink-0 w-80">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+        <div 
+          onClick={() => handleViewDetails(property)}
+          className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+        >
           {/* Imagen */}
           <div className="relative">
             <img 
@@ -327,11 +408,6 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
               alt={title} 
               className="w-full h-48 object-cover"
             />
-            {isVerified && (
-              <div className="absolute top-2 left-2 bg-[#ffd662] text-black text-xs font-bold px-2 py-1 rounded-md">
-                Disponible
-              </div>
-            )}
             {petFriendly && (
               <div className="absolute top-2 right-2 bg-black text-white text-xs font-bold px-2 py-1 rounded-md">
                 Pet Friendly
@@ -375,14 +451,17 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
               )}
             </div>
             
-            <div className="mt-4 flex justify-between items-center">
-              <div>
+            <div className="mt-4">
+              <div className="flex-1">
                 {(item.tipo === 'oferta' || tieneOferta) && property.precioOriginal ? (
-                  <div>
-                    <span className="text-lg font-bold text-green-600">${formatPrice(price)}</span>
-                    <span className="text-sm text-gray-600"> /mes</span>
-                    <div className="text-xs text-gray-500 line-through">
+                  <div className="space-y-1">
+                    <div className="text-xs text-gray-500">Precio original</div>
+                    <div className="text-sm text-gray-500 line-through">
                       ${formatPrice(property.precioOriginal)}/mes
+                    </div>
+                    <div className="text-xs text-gray-500 mt-2">Precio ofertado</div>
+                    <div className="text-lg font-bold text-[#ffd662]">
+                      ${formatPrice(price)}/mes
                     </div>
                   </div>
                 ) : (
@@ -392,39 +471,49 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
                   </>
                 )}
               </div>
-              <div className="flex space-x-2">
-                <button 
-                  onClick={() => handleViewDetails(property)}
-                  className="px-3 py-1 bg-[#ffd662] text-black rounded font-medium hover:bg-yellow-400 transition duration-300"
-                >
-                  Ver detalles
-                </button>
-                <button 
-                  onClick={() => {}}
-                  className="px-3 py-1 rounded font-medium transition duration-300 bg-white text-black border border-black hover:bg-gray-100"
-                >
-                  Comparar
-                </button>
-              </div>
             </div>
 
-            {/* Barra de progreso - solo para pendientes */}
-            {estado === 'pendiente' && (
-              <ProgressBar estado={estado} tieneOferta={tieneOferta} />
-            )}
-
-            {/* Fecha */}
-            <div className="mt-3 text-center text-xs text-gray-500">
+            {/* Fecha - movida arriba */}
+            <div className="mt-2 text-xs text-gray-500">
               Fecha: {item.fecha}
             </div>
+
+            {/* Barra de progreso */}
+            {activeTab === 'solicitudes' && (estado === 'pendiente' || estado === 'aceptada') && (
+              <ProgressBar estado={estado} tieneOferta={tieneOferta} />
+            )}
+            {activeTab === 'ofertas' && (
+              <OfferProgressBar estado={estado} />
+            )}
           </div>
         </div>
       </div>
     );
   };
 
-  const RowSection = ({ title, icon, items, showFilter = false, filterValue, onFilterChange }) => {
+  // Función para ordenar items
+  const sortItems = (items, sortBy) => {
+    if (!sortBy) return items;
+    
+    const sorted = [...items];
+    
+    switch(sortBy) {
+      case 'fecha-asc':
+        return sorted.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      case 'fecha-desc':
+        return sorted.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      case 'precio-desc':
+        return sorted.sort((a, b) => (b.property.price || 0) - (a.property.price || 0));
+      case 'precio-asc':
+        return sorted.sort((a, b) => (a.property.price || 0) - (b.property.price || 0));
+      default:
+        return sorted;
+    }
+  };
+
+  const RowSection = ({ title, icon, items, showFilter = false, filterValue, onFilterChange, activeTab, showOfertasFilter = false, ofertasFilterValue, onOfertasFilterChange }) => {
     const IconComponent = icon;
+    const sortedItems = sortItems(items, sortBy);
     
     return (
       <div className="mb-12">
@@ -434,14 +523,14 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
           {showFilter && (
             <div className="ml-4 flex gap-2 border border-gray-300 rounded-md overflow-hidden">
               <button
-                onClick={() => onFilterChange('pendientes')}
+                onClick={() => onFilterChange('en_proceso')}
                 className={`px-4 py-1 text-sm font-medium transition-colors ${
-                  filterValue === 'pendientes'
+                  filterValue === 'en_proceso'
                     ? 'bg-[#ffd662] text-black'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                Pendientes
+                En proceso
               </button>
               <button
                 onClick={() => onFilterChange('aprobadas')}
@@ -453,17 +542,81 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
               >
                 Aprobadas
               </button>
+              <button
+                onClick={() => onFilterChange('rechazadas')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  filterValue === 'rechazadas'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Rechazadas
+              </button>
+              <button
+                onClick={() => onFilterChange('todas')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  filterValue === 'todas'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Todas
+              </button>
+            </div>
+          )}
+          {showOfertasFilter && (
+            <div className="ml-4 flex gap-2 border border-gray-300 rounded-md overflow-hidden">
+              <button
+                onClick={() => onOfertasFilterChange('en_proceso')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  ofertasFilterValue === 'en_proceso'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                En proceso
+              </button>
+              <button
+                onClick={() => onOfertasFilterChange('rechazada')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  ofertasFilterValue === 'rechazada'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Rechazada
+              </button>
+              <button
+                onClick={() => onOfertasFilterChange('aceptada')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  ofertasFilterValue === 'aceptada'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Aceptada
+              </button>
+              <button
+                onClick={() => onOfertasFilterChange('todas')}
+                className={`px-4 py-1 text-sm font-medium transition-colors ${
+                  ofertasFilterValue === 'todas'
+                    ? 'bg-[#ffd662] text-black'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Todas
+              </button>
             </div>
           )}
           <span className="ml-auto bg-gray-200 text-black text-sm font-bold px-3 py-1 rounded-full">
-            {items.length}
+            {sortedItems.length}
           </span>
         </div>
         
-        {items.length > 0 ? (
+        {sortedItems.length > 0 ? (
           <div className="overflow-x-auto pb-4">
             <div className="flex gap-4" style={{ minWidth: 'max-content' }}>
-              {items.map((item) => {
+              {sortedItems.map((item) => {
                 const property = item.property;
                 const displayProperty = (item.tipo === 'oferta' || item.tieneOferta) && property.precioOriginal 
                   ? { ...property, precioOriginal: property.precioOriginal }
@@ -474,6 +627,7 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
                     key={item.id}
                     property={displayProperty}
                     item={item}
+                    activeTab={activeTab}
                   />
                 );
               })}
@@ -502,37 +656,88 @@ const RequestsDashboard = ({ onBack, onNavigate }) => {
           Volver
         </button>
 
-        <div className="flex items-center gap-3 mb-8">
-          <DocumentIcon className="w-8 h-8 text-[#ffd662]" />
-          <h1 className="text-3xl font-bold text-black">Mis solicitudes</h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex gap-0 border-b border-gray-300">
+            <button
+              onClick={() => setActiveTab('solicitudes')}
+              className={`flex items-center gap-2 px-6 py-3 text-lg font-bold transition-colors relative ${
+                activeTab === 'solicitudes'
+                  ? 'text-black bg-white border-b-2 border-[#ffd662]'
+                  : 'text-gray-700 bg-white hover:bg-yellow-50'
+              }`}
+            >
+              <DocumentIcon className="w-6 h-6 text-[#ffd662]" />
+              Mis solicitudes
+            </button>
+            <button
+              onClick={() => setActiveTab('ofertas')}
+              className={`flex items-center gap-2 px-6 py-3 text-lg font-bold transition-colors relative ${
+                activeTab === 'ofertas'
+                  ? 'text-black bg-white border-b-2 border-[#ffd662]'
+                  : 'text-gray-700 bg-white hover:bg-yellow-50'
+              }`}
+            >
+              <EmailIcon className="w-6 h-6 text-[#ffd662]" />
+              Ofertas
+            </button>
+          </div>
+
+          {/* Toolbar de filtros */}
+          <div className="flex items-center gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#ffd662]"
+            >
+              <option value="">Ordenar por...</option>
+              <option value="fecha-asc">Fecha: Más antigua</option>
+              <option value="fecha-desc">Fecha: Más reciente</option>
+              <option value="precio-desc">Precio: Mayor a menor</option>
+              <option value="precio-asc">Precio: Menor a mayor</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Contenido principal - 3 secciones */}
+      {/* Contenido principal */}
       <div className="max-w-7xl mx-auto px-6 pb-12">
-        {/* 1. Status (con filtro Pendientes/Aprobadas) */}
-        <RowSection 
-          title="Status" 
-          icon={ClockIcon} 
-          items={statusFilter === 'pendientes' ? pendientes : aprobadas}
-          showFilter={true}
-          filterValue={statusFilter}
-          onFilterChange={setStatusFilter}
-        />
-
-        {/* 2. Revisar ofertas */}
-        <RowSection 
-          title="Revisar ofertas" 
-          icon={CheckCircleIcon} 
-          items={revisarOfertas}
-        />
-
-        {/* 3. Rechazadas */}
-        <RowSection 
-          title="Rechazadas" 
-          icon={XCircleIcon} 
-          items={rechazadas}
-        />
+        {activeTab === 'solicitudes' ? (
+          <>
+            {/* Status (con filtro En proceso/Aprobadas/Rechazadas/Todas) */}
+            <RowSection 
+              title="Status" 
+              icon={ClockIcon} 
+              items={
+                statusFilter === 'todas' ? [...pendientes, ...aprobadas, ...rechazadas] :
+                statusFilter === 'en_proceso' ? pendientes :
+                statusFilter === 'aprobadas' ? aprobadas :
+                rechazadas
+              }
+              showFilter={true}
+              filterValue={statusFilter}
+              onFilterChange={setStatusFilter}
+              activeTab={activeTab}
+            />
+          </>
+        ) : (
+          <>
+            {/* Revisar ofertas con filtros */}
+            <RowSection 
+              title="Revisar ofertas" 
+              icon={CheckCircleIcon} 
+              items={
+                ofertasFilter === 'todas' ? revisarOfertas :
+                ofertasFilter === 'en_proceso' ? revisarOfertas.filter(item => item.estado === 'pendiente') :
+                ofertasFilter === 'rechazada' ? revisarOfertas.filter(item => item.estado === 'rechazada') :
+                revisarOfertas.filter(item => item.estado === 'aceptada' || item.estado === 'oferta_aceptada')
+              }
+              activeTab={activeTab}
+              showOfertasFilter={true}
+              ofertasFilterValue={ofertasFilter}
+              onOfertasFilterChange={setOfertasFilter}
+            />
+          </>
+        )}
       </div>
     </div>
   );
