@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 
 const Icon = ({ children }) => (
   <span className="w-10 h-10 rounded-full bg-yellow-50 border border-[#FFDC30] flex items-center justify-center">
@@ -57,10 +57,11 @@ const YesNo = ({ value, onChange, yesLabel = "Sí", noLabel = "No" }) => (
   </div>
 );
 
-const CheckboxList = ({ options, values, onToggle }) => (
+const CheckboxList = ({ options, values, onToggle, getIcon }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
     {options.map((opt) => {
       const checked = values.includes(opt);
+      const icon = getIcon ? getIcon(opt) : null;
       return (
         <label
           key={opt}
@@ -74,12 +75,148 @@ const CheckboxList = ({ options, values, onToggle }) => (
             onChange={() => onToggle(opt)}
             className="accent-[#FFDC30] w-4 h-4"
           />
+          {icon && <span className="text-lg">{icon}</span>}
           <span className="text-sm text-[#0a2a5c]">{opt}</span>
         </label>
       );
     })}
   </div>
 );
+
+// Componente reutilizable para subir fotos: tarjeta con borde punteado, icono y texto
+const PhotoUpload = ({ label, description, multiple, value, onChange, maxPreview = 6, maxFiles }) => {
+  const inputId = useId();
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const files = multiple ? (Array.isArray(value) ? value : value ? [value] : []) : (value ? [value] : []);
+  const hasFiles = files.length > 0;
+  const handleChange = (e) => {
+    const newFiles = Array.from(e.target.files || []);
+    e.target.value = "";
+    if (multiple) {
+      if (maxFiles != null) {
+        const combined = [...files, ...newFiles].slice(0, maxFiles);
+        onChange(combined);
+      } else {
+        onChange(newFiles);
+      }
+    } else {
+      onChange(newFiles[0] || null);
+    }
+  };
+  const removeAt = (idx, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = files.filter((_, i) => i !== idx);
+    onChange(multiple ? next : (next[0] || null));
+  };
+  const handleDragStart = (e, idx) => {
+    setDraggedIndex(idx);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", idx);
+    e.dataTransfer.setData("application/json", JSON.stringify({ index: idx }));
+  };
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverIndex(idx);
+  };
+  const handleDragLeave = () => setDragOverIndex(null);
+  const handleDrop = (e, dropIdx) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverIndex(null);
+    if (draggedIndex == null || draggedIndex === dropIdx) {
+      setDraggedIndex(null);
+      return;
+    }
+    const reordered = [...files];
+    const [removed] = reordered.splice(draggedIndex, 1);
+    reordered.splice(dropIdx, 0, removed);
+    onChange(reordered);
+    setDraggedIndex(null);
+  };
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  return (
+    <div className="space-y-2">
+      {label && <label className="block text-sm font-medium text-[#0a2a5c]">{label}</label>}
+      {description && <p className="text-xs text-gray-500">{description}</p>}
+      {maxFiles != null && multiple && (
+        <p className="text-xs text-gray-500">Hasta {maxFiles} {maxFiles === 1 ? "foto" : "fotos"}</p>
+      )}
+      <label
+        htmlFor={inputId}
+        className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer min-h-[140px] ${
+          hasFiles ? "border-[#0a2a5c]/30 bg-[#0a2a5c]/5" : "border-gray-300 bg-gray-50/50 hover:border-[#0a2a5c]/40 hover:bg-[#0a2a5c]/5"
+        }`}
+      >
+        <input
+          id={inputId}
+          type="file"
+          accept="image/*"
+          multiple={multiple}
+          onChange={handleChange}
+          className="sr-only"
+        />
+        {!hasFiles ? (
+          <>
+            <span className="flex items-center justify-center w-12 h-12 rounded-full bg-[#0a2a5c]/10 text-[#0a2a5c] mb-2">
+              <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h3l2-2h6a2 2 0 012 2z" />
+              </svg>
+            </span>
+            <span className="text-sm font-medium text-[#0a2a5c]">Arrastra fotos aquí o haz clic</span>
+            <span className="text-xs text-gray-500 mt-0.5">JPG, PNG</span>
+          </>
+        ) : (
+          <div className="w-full p-3">
+            <div className="flex gap-3 flex-wrap items-start">
+              <div className={`grid gap-2 flex-1 min-w-0 ${files.length === 1 ? "grid-cols-1" : "grid-cols-3"}`}>
+                {files.slice(0, maxPreview).map((f, idx) => (
+                  <div
+                    key={idx}
+                    draggable={multiple && files.length > 1}
+                    onDragStart={(e) => multiple && files.length > 1 && handleDragStart(e, idx)}
+                    onDragOver={(e) => multiple && files.length > 1 && handleDragOver(e, idx)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => multiple && files.length > 1 && handleDrop(e, idx)}
+                    onDragEnd={handleDragEnd}
+                    className={`relative rounded-lg overflow-hidden bg-gray-100 aspect-video cursor-grab active:cursor-grabbing ${
+                      draggedIndex === idx ? "opacity-50" : ""
+                    } ${dragOverIndex === idx ? "ring-2 ring-[#0a2a5c] ring-offset-2" : ""}`}
+                  >
+                    <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover pointer-events-none" draggable={false} />
+                    <button
+                      type="button"
+                      onClick={(e) => removeAt(idx, e)}
+                      className="absolute top-1 right-1 w-7 h-7 rounded-full bg-black/60 hover:bg-red-600 text-white flex items-center justify-center text-sm font-bold transition-colors"
+                      aria-label="Eliminar foto"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {multiple && (maxFiles == null || files.length < maxFiles) && (
+                <span className="inline-flex items-center justify-center w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 text-3xl text-gray-400 hover:border-[#0a2a5c] hover:text-[#0a2a5c] hover:bg-[#0a2a5c]/5 transition-colors flex-shrink-0">
+                  +
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              {files.length} {files.length === 1 ? "foto" : "fotos"} · Arrastra para ordenar · Haz clic para agregar
+            </p>
+          </div>
+        )}
+      </label>
+    </div>
+  );
+};
 
 const ProgressBar = ({ current, total }) => {
   const pct = total <= 1 ? 100 : Math.round(((current + 1) / total) * 100);
@@ -97,13 +234,37 @@ const ProgressBar = ({ current, total }) => {
 };
 
 export default function RegistrarMiPropiedad({ onBack, onDone }) {
-  const SECURITY = [
-    "Condominio privado con seguridad 24/7",
-    "Edificio con seguridad 24/7",
-    "No aplica",
-  ];
+  const SECURITY_CONDOMINIO = "Condominio privado con seguridad 24/7";
+  const SECURITY_EDIFICIO = "Edificio con seguridad 24/7";
+  const SECURITY_NA = "No aplica";
 
-  const FURNITURE_OPTIONS = ["Escritorio", "Cama", "Silla", "Espejo de cuerpo completo", "Armario"];
+  // Icono: guardia en caseta (seguridad 24/7)
+  const IconGuardiaCaseta = () => <span className="text-xl" aria-hidden>👮</span>;
+  // Icono: no aplica
+  const IconNoAplica = () => (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h8" />
+    </svg>
+  );
+  // Tipo de baño: Propio (verde) / Compartido (rojo) — estilo semáforo
+  const IconBanoPropio = () => (
+    <span className="flex items-center justify-center w-9 h-9 rounded-full bg-emerald-100 text-emerald-600">
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    </span>
+  );
+  const IconBanoCompartido = () => (
+    <span className="flex items-center justify-center w-9 h-9 rounded-full bg-red-100 text-red-600">
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </span>
+  );
+
+  const FURNITURE_OPTIONS = ["Escritorio", "Cama", "Silla", "Espejo de cuerpo completo", "Armario", "Lámpara de escritorio"];
+  const BED_TYPE_OPTIONS = ["Individual", "Matrimonial", "Queen", "King", "Litera"];
   const AMENITIES = [
     "Clubhouse",
     "Alberca",
@@ -131,6 +292,78 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
   const AMENIDADES_CASA = ["Secadora", "Lavadora", "Estacionamiento techado", "Hamaca", "Alberca", "Asador", "Jardín", "Roof-Top"];
   const AMENIDADES_CASA_CLUB = ["Gym", "Pista para correr", "Actividades deportivas", "Alberca", "Asadores", "Áreas verdes"];
   const MASCOTAS_OPTIONS = ["Perros", "Gatos", "Reptiles", "Roedores"];
+
+  // Icon functions for checkboxes
+  const getEspaciosComunesIcon = (opt) => {
+    const icons = {
+      "Sala": "🛋️",
+      "Comedor": "🍽️",
+      "Cocina": "🍳",
+      "Terraza": "☀️",
+      "Patio": "🌳",
+      "Área de lavado": "🧺",
+      "Garage": "🚗",
+      "Bodega": "📦"
+    };
+    return icons[opt] || "";
+  };
+
+  const getAmenidadesCasaIcon = (opt) => {
+    const icons = {
+      "Secadora": "🌬️",
+      "Lavadora": "🌀",
+      "Estacionamiento techado": "🅿️",
+      "Hamaca": "🛏️",
+      "Alberca": "🏊",
+      "Asador": "🔥",
+      "Jardín": "🌺",
+      "Roof-Top": "🏙️"
+    };
+    return icons[opt] || "";
+  };
+
+  const getAmenidadesCasaClubIcon = (opt) => {
+    const icons = {
+      "Gym": "💪",
+      "Pista para correr": "🏃",
+      "Actividades deportivas": "⚽",
+      "Alberca": "🏊",
+      "Asadores": "🔥",
+      "Áreas verdes": "🌿"
+    };
+    return icons[opt] || "";
+  };
+
+  const getServiciosIcon = (opt) => {
+    const icons = {
+      "Luz": "💡",
+      "Agua": "💧",
+      "Gas": "🔥",
+      "Internet": "🌐",
+      "Limpieza": "🧹",
+      "Mantenimiento": "🔧",
+      "Agua potable": "🥤"
+    };
+    return icons[opt] || "";
+  };
+
+  const IconMesa = () => (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="6" width="20" height="4" rx="0.5" />
+      <path d="M5 10v8M9 10v8M15 10v8M19 10v8" />
+    </svg>
+  );
+  const getFurnitureIcon = (opt) => {
+    if (opt === "Escritorio") return <IconMesa />;
+    const icons = {
+      "Cama": "🛏️",
+      "Silla": "🪑",
+      "Espejo de cuerpo completo": "🪞",
+      "Armario": "🚪",
+      "Lámpara de escritorio": "💡"
+    };
+    return icons[opt] || "";
+  };
 
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
@@ -193,7 +426,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       render: () => (
         <ChoiceGrid
           value={data.propertyType}
-          onChange={(v) => setData((d) => ({ ...d, propertyType: v, dentroDe: (v === "Cuarto" || v === "Loft") ? data.dentroDe : "" }))}
+          onChange={(v) => setData((d) => ({ ...d, propertyType: v, dentroDe: (v === "Cuarto" || v === "Loft") ? data.dentroDe : "", securityType: "" }))}
           cols={2}
           options={[
             {
@@ -250,7 +483,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
         render: () => (
           <ChoiceGrid
             value={data.dentroDe}
-            onChange={(v) => setData((d) => ({ ...d, dentroDe: v }))}
+            onChange={(v) => setData((d) => ({ ...d, dentroDe: v, securityType: "" }))}
             cols={2}
             options={[
               {
@@ -313,10 +546,21 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
             value={data.title}
             onChange={(e) => setData((d) => ({ ...d, title: e.target.value }))}
           />
-          <div>
-            <p className="text-xs text-gray-500 mb-2">Pon la zona general aquí (nombre del condominio, o la zona)</p>
+          <div className="rounded-xl border-2 border-[#0a2a5c]/10 bg-[#0a2a5c]/3 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#0a2a5c]/70 flex items-center justify-center text-white" aria-hidden>
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </span>
+              <div>
+                <p className="text-sm font-bold text-[#0a2a5c] uppercase tracking-wide">Zona general</p>
+                <p className="text-xs text-[#0a2a5c]/80">Nombre del condominio, o la zona</p>
+              </div>
+            </div>
             <input
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#FFDC30] focus:border-[#FFDC30]"
               placeholder="Ej. Porta Real, El Real, Solé, etc."
               value={data.addressGeneral}
               onChange={(e) => setData((d) => ({ ...d, addressGeneral: e.target.value }))}
@@ -512,7 +756,8 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     if (data.propertyType === "Cuarto") {
       base.push({
         key: "numRoomsToRent",
-        title: "¿Cuántas habitaciones deseas rentar individualmente?",
+        title: "¿Cuántas habitaciones quieres registrar?",
+        subtitle: "(Ej. tu casa tiene 3, pero aquí registrarás 2)",
         canContinue: data.numRoomsToRent >= 1 && data.numRoomsToRent <= 5 ? true : (data.numRoomsToRent >= 6),
         render: () => (
           <div className="space-y-4">
@@ -520,9 +765,34 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
               value={data.numRoomsToRent <= 5 ? data.numRoomsToRent.toString() : "5 or more"}
               onChange={(v) => {
                 if (v === "5 or more") {
-                  setData((d) => ({ ...d, numRoomsToRent: 6 }));
+                  const rooms = Array.from({ length: 6 }, () => ({
+                    hasFurniture: null,
+                    furniture: [],
+                    furnitureOtroInput: "",
+                    bedType: "",
+                    roomPhoto: [],
+                    bathroomPhoto: [],
+                    bathroomType: "",
+                    bedroomType: "",
+                    sharedWithCount: 2,
+                    price: 5000,
+                  }));
+                  setData((d) => ({ ...d, numRoomsToRent: 6, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
                 } else {
-                  setData((d) => ({ ...d, numRoomsToRent: parseInt(v, 10) }));
+                  const count = parseInt(v, 10);
+                  const rooms = Array.from({ length: count }, () => ({
+                    hasFurniture: null,
+                    furniture: [],
+                    furnitureOtroInput: "",
+                    bedType: "",
+                    roomPhoto: [],
+                    bathroomPhoto: [],
+                    bathroomType: "",
+                    bedroomType: "",
+                    sharedWithCount: 2,
+                    price: 5000,
+                  }));
+                  setData((d) => ({ ...d, numRoomsToRent: count, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
                 }
               }}
               cols={3}
@@ -537,14 +807,26 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
             />
             {data.numRoomsToRent >= 6 && (
               <div>
-                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones?</label>
+                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones quieres registrar?</label>
                 <input
                   type="number"
                   min={6}
                   value={data.numRoomsToRent}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10) || 6;
-                    setData((d) => ({ ...d, numRoomsToRent: value, registerRoomDetails: null, rooms: [], currentRoomIndex: 0 }));
+                    const rooms = Array.from({ length: value }, () => ({
+                      hasFurniture: null,
+                      furniture: [],
+                      furnitureOtroInput: "",
+                      bedType: "",
+                      roomPhoto: [],
+                      bathroomPhoto: [],
+                      bathroomType: "",
+                      bedroomType: "",
+                      sharedWithCount: 2,
+                      price: 5000,
+                    }));
+                    setData((d) => ({ ...d, numRoomsToRent: value, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
                   }}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
                   placeholder="Escribe el número"
@@ -565,9 +847,22 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       canContinue: data.servicesIncluded !== null && (data.servicesIncluded === false || data.includedServices.length > 0),
       render: () => (
         <div className="space-y-4">
-          <YesNo 
-            value={data.servicesIncluded} 
-            onChange={(v) => setData((d) => ({ ...d, servicesIncluded: v, includedServices: [] }))} 
+          <ChoiceGrid
+            value={data.servicesIncluded}
+            onChange={(v) => setData((d) => ({ ...d, servicesIncluded: v, includedServices: [] }))}
+            cols={2}
+            options={[
+              {
+                value: true,
+                label: "Sí",
+                icon: <span className="text-lg">✅</span>,
+              },
+              {
+                value: false,
+                label: "No",
+                icon: <span className="text-lg">❌</span>,
+              },
+            ]}
           />
           {data.servicesIncluded === true && (
             <div className="mt-4">
@@ -595,6 +890,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                     return { ...d, includedServices: withoutTodos };
                   });
                 }}
+                getIcon={getServiciosIcon}
               />
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <label
@@ -621,6 +917,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                     }}
                     className="accent-[#FFDC30] w-4 h-4"
                   />
+                  <span className="text-lg mr-1">✅</span>
                   <span className="text-sm font-bold text-[#0a2a5c]">Todos los servicios</span>
                 </label>
               </div>
@@ -654,7 +951,12 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
               label: "Solo mujeres",
               icon: (
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                  <path
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 0v9m-3-3h6"
+                  />
                 </svg>
               ),
             },
@@ -735,7 +1037,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     if (data.propertyType === "Casa" || data.propertyType === "Departamento") {
       base.push({
         key: "numRooms",
-        title: "¿Cuántas habitaciones tiene?",
+        title: "¿Cuántas habitaciones tiene? 🛏️",
         canContinue: data.numRooms >= 1,
         render: () => (
           <div className="flex items-center justify-center gap-3">
@@ -771,7 +1073,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
         render: () => (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Número de baños completos</label>
+              <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Número de baños completos 🚿</label>
               <div className="flex items-center justify-center gap-3">
                 <button
                   type="button"
@@ -791,7 +1093,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Número de baños medios</label>
+              <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Número de baños medios 🚽</label>
               <div className="flex items-center justify-center gap-3">
                 <button
                   type="button"
@@ -816,7 +1118,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
 
       base.push({
         key: "parkingSpaces",
-        title: "Lugares de estacionamiento",
+        title: "Lugares de estacionamiento 🅿️",
         canContinue: data.parkingSpaces >= 0,
         render: () => (
           <div className="flex items-center justify-center gap-3">
@@ -841,7 +1143,11 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
 
       base.push({
         key: "espaciosComunes",
-        title: "¿Qué espacios comunes tiene?",
+        title: data.propertyType === "Casa" 
+          ? "¿Qué espacios comunes tiene la casa?"
+          : data.propertyType === "Departamento"
+          ? "¿Qué espacios comunes tiene el departamento?"
+          : "¿Qué espacios comunes tiene?",
         canContinue: true,
         render: () => (
           <div className="space-y-4">
@@ -856,6 +1162,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                     : [...d.espaciosComunes, opt],
                 }))
               }
+              getIcon={getEspaciosComunesIcon}
             />
             <div>
               <label className="block text-sm font-medium text-[#0a2a5c] mb-2">Otra</label>
@@ -887,7 +1194,9 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     // First step: Amenities of the house
     base.push({
       key: "amenitiesHouse",
-      title: "Amenidades de la casa",
+      title: data.propertyType === "Departamento" 
+        ? "Amenidades del departamento (cosas extra que la hacen mejor)"
+        : "Amenidades de la casa (cosas extra que la hacen mejor)",
       canContinue: true,
       render: () => (
         <div className="space-y-4">
@@ -902,6 +1211,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                   : [...d.amenidadesCasa, opt],
               }))
             }
+            getIcon={getAmenidadesCasaIcon}
           />
           <div className="mt-3">
             <label className="block text-sm font-medium text-[#0a2a5c] mb-2">Otra</label>
@@ -940,25 +1250,12 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
             />
             {data.tieneCasaClub && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto del Casa Club (opcional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    setData((d) => ({ ...d, fotoCasaClub: file }));
-                  }}
-                  className="w-full"
+                <PhotoUpload
+                  label="Foto del Casa Club (opcional)"
+                  multiple={false}
+                  value={data.fotoCasaClub}
+                  onChange={(file) => setData((d) => ({ ...d, fotoCasaClub: file }))}
                 />
-                {data.fotoCasaClub && (
-                  <div className="mt-2">
-                    <img
-                      src={URL.createObjectURL(data.fotoCasaClub)}
-                      alt="Casa Club preview"
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -976,6 +1273,7 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                     : [...d.amenidadesCasaClub, opt],
                 }))
               }
+              getIcon={getAmenidadesCasaClubIcon}
             />
             <div className="mt-3">
               <label className="block text-sm font-medium text-[#0a2a5c] mb-2">Otra</label>
@@ -990,29 +1288,14 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Fotos de áreas comunes (opcional)</label>
-            <p className="text-xs text-gray-600 mb-3">Sube fotos de las áreas comunes del edificio o condominio</p>
-            <input
-              type="file"
-              accept="image/*"
+            <PhotoUpload
+              label="Fotos de áreas comunes del edificio / condominio (opcional)"
+              description="Sube fotos de las áreas comunes del edificio o condominio (no de tu casa/departamento)"
               multiple
-              onChange={(e) => setData((d) => ({ ...d, fotosAreasComunes: Array.from(e.target.files || []) }))}
-              className="w-full"
+              value={data.fotosAreasComunes}
+              onChange={(files) => setData((d) => ({ ...d, fotosAreasComunes: files }))}
+              maxPreview={6}
             />
-            {data.fotosAreasComunes.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                {data.fotosAreasComunes.slice(0, 6).map((f, idx) => (
-                  <img
-                    key={`${f.name}-${idx}`}
-                    src={URL.createObjectURL(f)}
-                    alt="preview"
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500 mt-2">Puedes subirlas después.</div>
-            )}
           </div>
         </div>
       ),
@@ -1022,21 +1305,34 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       key: "securityType",
       title: "Seguridad",
       canContinue: true,
-      render: () => (
-        <ChoiceGrid
-          value={data.securityType}
-          onChange={(v) => setData((d) => ({ ...d, securityType: v }))}
-          options={SECURITY.map((s) => ({
-            value: s,
-            label: s,
-            icon: (
-              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
-              </svg>
-            ),
-          }))}
-        />
-      ),
+      render: () => {
+        const isCasa = data.propertyType === "Casa";
+        const isEdificio = data.propertyType === "Departamento" || data.propertyType === "Loft";
+        const isCuarto = data.propertyType === "Cuarto";
+        const soloCondominio = isCasa || (isCuarto && data.dentroDe === "Casa");
+        const soloEdificio = isEdificio || (isCuarto && data.dentroDe === "Departamento");
+        const options = [];
+        if (soloCondominio) {
+          options.push({ value: SECURITY_CONDOMINIO, label: SECURITY_CONDOMINIO, icon: <IconGuardiaCaseta /> });
+        }
+        if (soloEdificio) {
+          options.push({ value: SECURITY_EDIFICIO, label: SECURITY_EDIFICIO, icon: <IconGuardiaCaseta /> });
+        }
+        if (!soloCondominio && !soloEdificio) {
+          options.push({ value: SECURITY_CONDOMINIO, label: SECURITY_CONDOMINIO, icon: <IconGuardiaCaseta /> });
+          options.push({ value: SECURITY_EDIFICIO, label: SECURITY_EDIFICIO, icon: <IconGuardiaCaseta /> });
+        }
+        options.push({ value: SECURITY_NA, label: SECURITY_NA, icon: <IconNoAplica /> });
+        const validValues = options.map((o) => o.value);
+        const value = validValues.includes(data.securityType) ? data.securityType : "";
+        return (
+          <ChoiceGrid
+            value={value}
+            onChange={(v) => setData((d) => ({ ...d, securityType: v }))}
+            options={options}
+          />
+        );
+      },
     });
 
     // General house photos step
@@ -1045,112 +1341,65 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       title: "Fotos generales de la casa",
       canContinue: true,
       render: () => (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600 mb-3">Sube fotos de la casa en general</p>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => setData((d) => ({ ...d, photos: Array.from(e.target.files || []) }))}
-            className="w-full"
-          />
-          {data.photos.length > 0 ? (
-            <div className="grid grid-cols-3 gap-2">
-              {data.photos.slice(0, 6).map((f, idx) => (
-                <img
-                  key={`${f.name}-${idx}`}
-                  src={URL.createObjectURL(f)}
-                  alt="preview"
-                  className="w-full h-24 object-cover rounded-lg"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-sm text-gray-500">Puedes subirlas después.</div>
-          )}
-        </div>
+        <PhotoUpload
+          description="Sube fotos de la casa en general"
+          multiple
+          value={data.photos}
+          onChange={(files) => setData((d) => ({ ...d, photos: files }))}
+          maxPreview={6}
+        />
       ),
     });
 
-    // Room and bathroom photos step
+    // Descripción corta (justo después de fotos generales); título según casa/departamento
     base.push({
+      key: "description",
+      title: data.propertyType === "Casa"
+        ? "Descripción corta de la casa"
+        : data.propertyType === "Departamento"
+        ? "Descripción corta del departamento"
+        : "Descripción corta",
+      canContinue: data.description.trim().length >= 10,
+      render: () => (
+        <textarea
+          rows={4}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+          placeholder="Ej. Ideal para estudiantes, zona tranquila, cerca de transporte..."
+          value={data.description}
+          onChange={(e) => setData((d) => ({ ...d, description: e.target.value }))}
+        />
+      ),
+    });
+
+    // Helper: step for "Fotos de habitaciones y baños" (only when NOT registering each room individually)
+    const fotosHabitacionesStep = {
       key: "fotosHabitaciones",
       title: "Fotos de habitaciones y baños",
       canContinue: true,
       render: () => (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600 mb-3">Sube fotos de las habitaciones y baños</p>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => setData((d) => ({ ...d, fotosHabitaciones: Array.from(e.target.files || []) }))}
-            className="w-full"
-          />
-          {data.fotosHabitaciones.length > 0 ? (
-            <div className="grid grid-cols-3 gap-2">
-              {data.fotosHabitaciones.slice(0, 6).map((f, idx) => (
-                <img
-                  key={`${f.name}-${idx}`}
-                  src={URL.createObjectURL(f)}
-                  alt="preview"
-                  className="w-full h-24 object-cover rounded-lg"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-sm text-gray-500">Puedes subirlas después.</div>
-          )}
-        </div>
+        <PhotoUpload
+          description="Sube fotos de las habitaciones y baños"
+          multiple
+          value={data.fotosHabitaciones}
+          onChange={(files) => setData((d) => ({ ...d, fotosHabitaciones: files }))}
+          maxPreview={6}
+        />
       ),
-    });
+    };
 
-    // Add room details registration step for Cuarto (before description)
-    if (data.propertyType === "Cuarto" && data.numRoomsToRent > 0) {
-      // Ask if they want to register room details
-      if (data.registerRoomDetails === null) {
+    // Cuarto: registrar información específica de cada habitación (directo)
+    if (data.propertyType === "Cuarto" && data.numRoomsToRent > 0 && data.rooms.length > 0) {
+      data.rooms.forEach((room, index) => {
+        const formatNumber = (num) => {
+          return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        };
+
         base.push({
-          key: "registerRoomDetails",
-          title: "¿Quieres registrar información específica de cada habitación?",
-          canContinue: data.registerRoomDetails !== null,
+          key: `room-${index}`,
+          title: `Habitación ${index + 1} de ${data.rooms.length}`,
+          canContinue: room.hasFurniture !== null && room.bathroomType !== "" && room.bedroomType !== "" && room.price >= 1000 && (room.bedroomType !== "Compartida" || (room.sharedWithCount >= 2 && room.sharedWithCount <= 10)),
           render: () => (
-            <div className="space-y-4">
-              <YesNo
-                value={data.registerRoomDetails}
-                onChange={(v) => {
-                  if (v === true) {
-                    // Initialize rooms array
-                    const rooms = Array.from({ length: data.numRoomsToRent }, () => ({
-                      hasFurniture: null,
-                      furniture: [],
-                      roomPhoto: null,
-                      bathroomPhoto: null,
-                      bathroomType: "",
-                      bedroomType: "",
-                      price: 5000,
-                    }));
-                    setData((d) => ({ ...d, registerRoomDetails: v, rooms, currentRoomIndex: 0 }));
-                  } else {
-                    setData((d) => ({ ...d, registerRoomDetails: v, rooms: [], currentRoomIndex: 0 }));
-                  }
-                }}
-              />
-            </div>
-          ),
-        });
-      } else if (data.registerRoomDetails === true && data.rooms.length > 0) {
-        // Register details for each room - add all room steps
-        data.rooms.forEach((room, index) => {
-          const formatNumber = (num) => {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          };
-
-          base.push({
-            key: `room-${index}`,
-            title: `Habitación ${index + 1} de ${data.rooms.length}`,
-            canContinue: room.hasFurniture !== null && room.bathroomType !== "" && room.bedroomType !== "" && room.price >= 1000,
-            render: () => (
-              <div className="space-y-6">
+            <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Precio mensual</label>
                   <div className="text-center">
@@ -1183,27 +1432,18 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto de la habitación (opcional)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
+                  <PhotoUpload
+                    label="Foto de la habitación"
+                    multiple
+                    maxFiles={3}
+                    value={room.roomPhoto || []}
+                    onChange={(files) => {
                       const newRooms = [...data.rooms];
-                      newRooms[index] = { ...room, roomPhoto: file };
+                      newRooms[index] = { ...room, roomPhoto: files };
                       setData((d) => ({ ...d, rooms: newRooms }));
                     }}
-                    className="w-full"
+                    maxPreview={3}
                   />
-                  {room.roomPhoto && (
-                    <div className="mt-2">
-                      <img
-                        src={URL.createObjectURL(room.roomPhoto)}
-                        alt="Room preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 <div>
@@ -1219,24 +1459,226 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                 </div>
 
                 {room.hasFurniture === true && (
-                  <div>
-                    <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Qué muebles tiene?</label>
-                    <CheckboxList
-                      options={FURNITURE_OPTIONS}
-                      values={room.furniture || []}
-                      onToggle={(opt) => {
-                        const newRooms = [...data.rooms];
-                        const currentFurniture = room.furniture || [];
-                        const newFurniture = currentFurniture.includes(opt)
-                          ? currentFurniture.filter((f) => f !== opt)
-                          : [...currentFurniture, opt];
-                        newRooms[index] = { ...room, furniture: newFurniture };
-                        setData((d) => ({ ...d, rooms: newRooms }));
-                      }}
-                    />
+                  <div className="space-y-4 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+                    <label className="block text-sm font-medium text-[#0a2a5c]">¿Qué muebles tiene?</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {FURNITURE_OPTIONS.map((opt) => {
+                        const checked = (room.furniture || []).includes(opt);
+                        const icon = getFurnitureIcon(opt);
+                        return (
+                          <div key={opt}>
+                            <label
+                              className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                                checked ? "border-[#FFDC30] bg-yellow-50" : "border-gray-200 bg-white hover:border-gray-300"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  const newRooms = [...data.rooms];
+                                  const currentFurniture = room.furniture || [];
+                                  const standard = currentFurniture.filter((f) => FURNITURE_OPTIONS.includes(f));
+                                  const otros = currentFurniture.filter((f) => !FURNITURE_OPTIONS.includes(f));
+                                  const newStandard = standard.includes(opt)
+                                    ? standard.filter((f) => f !== opt)
+                                    : [...standard, opt];
+                                  const removingCama = opt === "Cama" && standard.includes("Cama");
+                                  newRooms[index] = {
+                                    ...room,
+                                    furniture: [...newStandard, ...otros],
+                                    bedType: removingCama ? "" : room.bedType,
+                                  };
+                                  setData((d) => ({ ...d, rooms: newRooms }));
+                                }}
+                                className="accent-[#FFDC30] w-4 h-4"
+                              />
+                              {icon && (
+                                <span className="inline-flex items-center justify-center w-7 h-7 shrink-0 text-lg">
+                                  {icon}
+                                </span>
+                              )}
+                              <span className="text-sm text-[#0a2a5c]">{opt}</span>
+                            </label>
+                            {opt === "Cama" && (room.furniture || []).includes("Cama") && (
+                              <div className="ml-6 mt-1 mb-2">
+                                <p className="text-xs text-gray-500 mb-1">Tipo de cama</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {BED_TYPE_OPTIONS.map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() => {
+                                        const newRooms = [...data.rooms];
+                                        newRooms[index] = { ...room, bedType: t };
+                                        setData((d) => ({ ...d, rooms: newRooms }));
+                                      }}
+                                      className={`px-2 py-1 rounded-lg text-xs font-medium transition ${
+                                        room.bedType === t
+                                          ? "bg-[#FFDC30] text-[#0a2a5c]"
+                                          : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                                      }`}
+                                    >
+                                      {t}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="pt-3 border-t border-gray-200">
+                      <label className="block text-sm font-medium text-[#0a2a5c] mb-2">➕ Otros</label>
+                      <p className="text-xs text-gray-500 mb-2">Escribe y agrega cada mueble u objeto extra</p>
+                      <div className="flex gap-2 flex-wrap">
+                        <input
+                          type="text"
+                          value={room.furnitureOtroInput ?? ""}
+                          onChange={(e) => {
+                            const newRooms = [...data.rooms];
+                            newRooms[index] = { ...room, furnitureOtroInput: e.target.value };
+                            setData((d) => ({ ...d, rooms: newRooms }));
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const text = (room.furnitureOtroInput ?? "").trim();
+                              if (!text) return;
+                              const items = text.split(/[,]+/).map((s) => s.trim()).filter(Boolean);
+                              if (items.length === 0) return;
+                              const newRooms = [...data.rooms];
+                              const newFurniture = [...(room.furniture || []), ...items];
+                              newRooms[index] = { ...room, furniture: newFurniture, furnitureOtroInput: "" };
+                              setData((d) => ({ ...d, rooms: newRooms }));
+                            }
+                          }}
+                          placeholder="Ej. Mesa de noche, estante (separa con coma)"
+                          className="flex-1 min-w-[140px] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const text = (room.furnitureOtroInput ?? "").trim();
+                            if (!text) return;
+                            const items = text.split(/[,]+/).map((s) => s.trim()).filter(Boolean);
+                            if (items.length === 0) return;
+                            const newRooms = [...data.rooms];
+                            const newFurniture = [...(room.furniture || []), ...items];
+                            newRooms[index] = { ...room, furniture: newFurniture, furnitureOtroInput: "" };
+                            setData((d) => ({ ...d, rooms: newRooms }));
+                          }}
+                          className="px-4 py-2 rounded-lg bg-[#0a2a5c] text-white text-sm font-medium hover:bg-[#0a2a5c]/90"
+                        >
+                          Agregar
+                        </button>
+                      </div>
+                      {(room.furniture || []).filter((f) => !FURNITURE_OPTIONS.includes(f)).length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {(room.furniture || []).filter((f) => !FURNITURE_OPTIONS.includes(f)).map((item) => (
+                            <span
+                              key={item}
+                              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#0a2a5c]/10 text-[#0a2a5c] text-sm"
+                            >
+                              {item}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newRooms = [...data.rooms];
+                                  const newFurniture = (room.furniture || []).filter((f) => f !== item);
+                                  newRooms[index] = { ...room, furniture: newFurniture };
+                                  setData((d) => ({ ...d, rooms: newRooms }));
+                                }}
+                                className="ml-0.5 text-gray-500 hover:text-red-600"
+                                aria-label="Quitar"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 
+                <div>
+                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Es para una sola persona o compartida?</label>
+                  <ChoiceGrid
+                    value={room.bedroomType}
+                    onChange={(v) => {
+                      const newRooms = [...data.rooms];
+                      newRooms[index] = {
+                        ...room,
+                        bedroomType: v,
+                        sharedWithCount: v === "Compartida" ? (room.sharedWithCount >= 2 ? room.sharedWithCount : 2) : 0,
+                      };
+                      setData((d) => ({ ...d, rooms: newRooms }));
+                    }}
+                    options={[
+                      { value: "Una sola persona", label: "Una sola persona", icon: "👤" },
+                      { value: "Compartida", label: "Compartida", icon: "👥" },
+                    ]}
+                  />
+                  {room.bedroomType === "Compartida" && (
+                    <div className="mt-3 ml-1">
+                      <label className="block text-xs font-medium text-[#0a2a5c] mb-2">¿Con cuántas personas se comparte la habitación?</label>
+                      <div className="flex flex-wrap gap-2">
+                        {[2, 3, 4, 5, 6].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => {
+                              const newRooms = [...data.rooms];
+                              newRooms[index] = { ...room, sharedWithCount: n };
+                              setData((d) => ({ ...d, rooms: newRooms }));
+                            }}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                              room.sharedWithCount === n
+                                ? "bg-[#FFDC30] text-[#0a2a5c]"
+                                : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                        <input
+                          type="number"
+                          min={7}
+                          max={10}
+                          value={room.sharedWithCount >= 7 && room.sharedWithCount <= 10 ? String(room.sharedWithCount) : ""}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val) && val >= 2 && val <= 10) {
+                              const newRooms = [...data.rooms];
+                              newRooms[index] = { ...room, sharedWithCount: val };
+                              setData((d) => ({ ...d, rooms: newRooms }));
+                            }
+                          }}
+                          placeholder="7+"
+                          className="w-14 px-2 py-2 rounded-lg text-sm border border-gray-200 text-center focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <PhotoUpload
+                    label="Foto del baño"
+                    multiple
+                    maxFiles={2}
+                    value={room.bathroomPhoto || []}
+                    onChange={(files) => {
+                      const newRooms = [...data.rooms];
+                      newRooms[index] = { ...room, bathroomPhoto: files };
+                      setData((d) => ({ ...d, rooms: newRooms }));
+                    }}
+                    maxPreview={2}
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Tipo de baño</label>
                   <ChoiceGrid
@@ -1247,154 +1689,309 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                       setData((d) => ({ ...d, rooms: newRooms }));
                     }}
                     options={[
-                      { value: "Propio", label: "Propio" },
-                      { value: "Compartido", label: "Compartido" },
-                    ]}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto del baño (opcional)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      const newRooms = [...data.rooms];
-                      newRooms[index] = { ...room, bathroomPhoto: file };
-                      setData((d) => ({ ...d, rooms: newRooms }));
-                    }}
-                    className="w-full"
-                  />
-                  {room.bathroomPhoto && (
-                    <div className="mt-2">
-                      <img
-                        src={URL.createObjectURL(room.bathroomPhoto)}
-                        alt="Bathroom preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Es para una sola persona o compartida?</label>
-                  <ChoiceGrid
-                    value={room.bedroomType}
-                    onChange={(v) => {
-                      const newRooms = [...data.rooms];
-                      newRooms[index] = { ...room, bedroomType: v };
-                      setData((d) => ({ ...d, rooms: newRooms }));
-                    }}
-                    options={[
-                      { value: "Una sola persona", label: "Una sola persona" },
-                      { value: "Compartida", label: "Compartida" },
+                      { value: "Propio", label: "Propio", icon: <IconBanoPropio /> },
+                      { value: "Compartido", label: "Compartido", icon: <IconBanoCompartido /> },
                     ]}
                   />
                 </div>
               </div>
-            ),
-          });
-        });
-      }
-    }
-
-    // Add bedroom details registration step for Casa/Departamento (before description)
-    if ((data.propertyType === "Casa" || data.propertyType === "Departamento") && data.numRooms > 0) {
-      // Ask if they want to register bedroom details
-      if (data.registerBedroomDetails === null) {
-        base.push({
-          key: "registerBedroomDetails",
-          title: "¿Quieres registrar información específica de cada habitación?",
-          canContinue: data.registerBedroomDetails !== null,
-          render: () => (
-            <div className="space-y-4">
-              <YesNo
-                value={data.registerBedroomDetails}
-                onChange={(v) => {
-                  if (v === true) {
-                    // Initialize bedrooms array
-                    const bedrooms = Array.from({ length: data.numRooms }, () => ({
-                      hasFurniture: null,
-                      furniture: [],
-                      roomPhoto: null,
-                      bathroomPhoto: null,
-                      bathroomType: "",
-                      bedroomType: "",
-                    }));
-                    setData((d) => ({ ...d, registerBedroomDetails: v, bedrooms, currentBedroomIndex: 0 }));
-                  } else {
-                    setData((d) => ({ ...d, registerBedroomDetails: v, bedrooms: [], currentBedroomIndex: 0 }));
-                  }
-                }}
-              />
-            </div>
           ),
         });
+      });
+    }
+
+    // Casa/Departamento: pregunta siempre visible para poder cambiar. Si No → fotos; Si Sí → pasos por habitación.
+    if ((data.propertyType === "Casa" || data.propertyType === "Departamento") && data.numRooms > 0) {
+      base.push({
+        key: "registerBedroomDetails",
+        title: "¿Quieres registrar información específica de cada habitación?",
+        canContinue: data.registerBedroomDetails !== null,
+        render: () => (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500">Puedes cambiar esta opción más adelante si lo necesitas.</p>
+            <YesNo
+              value={data.registerBedroomDetails}
+              onChange={(v) => {
+                if (v === true) {
+                  const bedrooms = Array.from({ length: data.numRooms }, () => ({
+                    hasFurniture: null,
+                    furniture: [],
+                    furnitureOtroInput: "",
+                    bedType: "",
+                    roomPhoto: [],
+                    bathroomPhoto: [],
+                    bathroomType: "",
+                    bedroomType: "",
+                    sharedWithCount: 2,
+                  }));
+                  setData((d) => ({ ...d, registerBedroomDetails: v, bedrooms, currentBedroomIndex: 0 }));
+                } else {
+                  setData((d) => ({ ...d, registerBedroomDetails: v, bedrooms: [], currentBedroomIndex: 0 }));
+                }
+              }}
+            />
+          </div>
+        ),
+      });
+      if (data.registerBedroomDetails === false) {
+        base.push(fotosHabitacionesStep);
       } else if (data.registerBedroomDetails === true && data.bedrooms.length > 0) {
         // Register details for each bedroom - add all bedroom steps
         data.bedrooms.forEach((bedroom, index) => {
           base.push({
             key: `bedroom-${index}`,
             title: `Habitación ${index + 1} de ${data.bedrooms.length}`,
-            canContinue: bedroom.hasFurniture !== null && bedroom.bathroomType !== "" && bedroom.bedroomType !== "",
+            canContinue: bedroom.hasFurniture !== null && bedroom.bathroomType !== "" && bedroom.bedroomType !== "" && (bedroom.bedroomType !== "Compartida" || (bedroom.sharedWithCount >= 2 && bedroom.sharedWithCount <= 10)),
             render: () => (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto de la habitación (opcional)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
+                  <PhotoUpload
+                    label="Foto de la habitación"
+                    multiple
+                    maxFiles={3}
+                    value={bedroom.roomPhoto || []}
+                    onChange={(files) => {
                       const newBedrooms = [...data.bedrooms];
-                      newBedrooms[index] = { ...bedroom, roomPhoto: file };
+                      newBedrooms[index] = { ...bedroom, roomPhoto: files };
                       setData((d) => ({ ...d, bedrooms: newBedrooms }));
                     }}
-                    className="w-full"
+                    maxPreview={3}
                   />
-                  {bedroom.roomPhoto && (
-                    <div className="mt-2">
-                      <img
-                        src={URL.createObjectURL(bedroom.roomPhoto)}
-                        alt="Room preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Tiene muebles?</label>
-                  <YesNo
+                    <YesNo
                     value={bedroom.hasFurniture}
                     onChange={(v) => {
                       const newBedrooms = [...data.bedrooms];
-                      newBedrooms[index] = { ...bedroom, hasFurniture: v, furniture: v ? bedroom.furniture : [] };
+                      newBedrooms[index] = { ...bedroom, hasFurniture: v, furniture: v ? bedroom.furniture : [], furnitureOtroInput: v ? (bedroom.furnitureOtroInput ?? "") : "" };
                       setData((d) => ({ ...d, bedrooms: newBedrooms }));
                     }}
                   />
                 </div>
 
                 {bedroom.hasFurniture === true && (
-                  <div>
-                    <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Qué muebles tiene?</label>
-                    <CheckboxList
-                      options={FURNITURE_OPTIONS}
-                      values={bedroom.furniture || []}
-                      onToggle={(opt) => {
-                        const newBedrooms = [...data.bedrooms];
-                        const currentFurniture = bedroom.furniture || [];
-                        const newFurniture = currentFurniture.includes(opt)
-                          ? currentFurniture.filter((f) => f !== opt)
-                          : [...currentFurniture, opt];
-                        newBedrooms[index] = { ...bedroom, furniture: newFurniture };
-                        setData((d) => ({ ...d, bedrooms: newBedrooms }));
-                      }}
-                    />
+                  <div className="space-y-4 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+                    <label className="block text-sm font-medium text-[#0a2a5c]">¿Qué muebles tiene?</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {FURNITURE_OPTIONS.map((opt) => {
+                        const checked = (bedroom.furniture || []).includes(opt);
+                        const icon = getFurnitureIcon(opt);
+                        return (
+                          <div key={opt}>
+                            <label
+                              className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                                checked ? "border-[#FFDC30] bg-yellow-50" : "border-gray-200 bg-white hover:border-gray-300"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  const newBedrooms = [...data.bedrooms];
+                                  const currentFurniture = bedroom.furniture || [];
+                                  const standard = currentFurniture.filter((f) => FURNITURE_OPTIONS.includes(f));
+                                  const otros = currentFurniture.filter((f) => !FURNITURE_OPTIONS.includes(f));
+                                  const newStandard = standard.includes(opt)
+                                    ? standard.filter((f) => f !== opt)
+                                    : [...standard, opt];
+                                  const removingCama = opt === "Cama" && standard.includes("Cama");
+                                  newBedrooms[index] = {
+                                    ...bedroom,
+                                    furniture: [...newStandard, ...otros],
+                                    bedType: removingCama ? "" : bedroom.bedType,
+                                  };
+                                  setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                                }}
+                                className="accent-[#FFDC30] w-4 h-4"
+                              />
+                              {icon && (
+                                <span className="inline-flex items-center justify-center w-7 h-7 shrink-0 text-lg">
+                                  {icon}
+                                </span>
+                              )}
+                              <span className="text-sm text-[#0a2a5c]">{opt}</span>
+                            </label>
+                            {opt === "Cama" && (bedroom.furniture || []).includes("Cama") && (
+                              <div className="ml-6 mt-1 mb-2">
+                                <p className="text-xs text-gray-500 mb-1">Tipo de cama</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {BED_TYPE_OPTIONS.map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() => {
+                                        const newBedrooms = [...data.bedrooms];
+                                        newBedrooms[index] = { ...bedroom, bedType: t };
+                                        setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                                      }}
+                                      className={`px-2 py-1 rounded-lg text-xs font-medium transition ${
+                                        bedroom.bedType === t
+                                          ? "bg-[#FFDC30] text-[#0a2a5c]"
+                                          : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                                      }`}
+                                    >
+                                      {t}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="pt-3 border-t border-gray-200">
+                      <label className="block text-sm font-medium text-[#0a2a5c] mb-2">➕ Otros</label>
+                      <p className="text-xs text-gray-500 mb-2">Escribe y agrega cada mueble u objeto extra</p>
+                      <div className="flex gap-2 flex-wrap">
+                        <input
+                          type="text"
+                          value={bedroom.furnitureOtroInput ?? ""}
+                          onChange={(e) => {
+                            const newBedrooms = [...data.bedrooms];
+                            newBedrooms[index] = { ...bedroom, furnitureOtroInput: e.target.value };
+                            setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const text = (bedroom.furnitureOtroInput ?? "").trim();
+                              if (!text) return;
+                              const items = text.split(/[,]+/).map((s) => s.trim()).filter(Boolean);
+                              if (items.length === 0) return;
+                              const newBedrooms = [...data.bedrooms];
+                              const newFurniture = [...(bedroom.furniture || []), ...items];
+                              newBedrooms[index] = { ...bedroom, furniture: newFurniture, furnitureOtroInput: "" };
+                              setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                            }
+                          }}
+                          placeholder="Ej. Mesa de noche, estante (separa con coma)"
+                          className="flex-1 min-w-[140px] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const text = (bedroom.furnitureOtroInput ?? "").trim();
+                            if (!text) return;
+                            const items = text.split(/[,]+/).map((s) => s.trim()).filter(Boolean);
+                            if (items.length === 0) return;
+                            const newBedrooms = [...data.bedrooms];
+                            const newFurniture = [...(bedroom.furniture || []), ...items];
+                            newBedrooms[index] = { ...bedroom, furniture: newFurniture, furnitureOtroInput: "" };
+                            setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                          }}
+                          className="px-4 py-2 rounded-lg bg-[#0a2a5c] text-white text-sm font-medium hover:bg-[#0a2a5c]/90"
+                        >
+                          Agregar
+                        </button>
+                      </div>
+                      {(bedroom.furniture || []).filter((f) => !FURNITURE_OPTIONS.includes(f)).length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {(bedroom.furniture || []).filter((f) => !FURNITURE_OPTIONS.includes(f)).map((item) => (
+                            <span
+                              key={item}
+                              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#0a2a5c]/10 text-[#0a2a5c] text-sm"
+                            >
+                              {item}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newBedrooms = [...data.bedrooms];
+                                  const newFurniture = (bedroom.furniture || []).filter((f) => f !== item);
+                                  newBedrooms[index] = { ...bedroom, furniture: newFurniture };
+                                  setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                                }}
+                                className="ml-0.5 text-gray-500 hover:text-red-600"
+                                aria-label="Quitar"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 
+                <div>
+                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Es para una sola persona o compartida?</label>
+                  <ChoiceGrid
+                    value={bedroom.bedroomType}
+                    onChange={(v) => {
+                      const newBedrooms = [...data.bedrooms];
+                      newBedrooms[index] = {
+                        ...bedroom,
+                        bedroomType: v,
+                        sharedWithCount: v === "Compartida" ? (bedroom.sharedWithCount >= 2 ? bedroom.sharedWithCount : 2) : 0,
+                      };
+                      setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                    }}
+                    options={[
+                      { value: "Una sola persona", label: "Una sola persona", icon: "👤" },
+                      { value: "Compartida", label: "Compartida", icon: "👥" },
+                    ]}
+                  />
+                  {bedroom.bedroomType === "Compartida" && (
+                    <div className="mt-3 ml-1">
+                      <label className="block text-xs font-medium text-[#0a2a5c] mb-2">¿Con cuántas personas se comparte la habitación?</label>
+                      <div className="flex flex-wrap gap-2">
+                        {[2, 3, 4, 5, 6].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => {
+                              const newBedrooms = [...data.bedrooms];
+                              newBedrooms[index] = { ...bedroom, sharedWithCount: n };
+                              setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                            }}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                              bedroom.sharedWithCount === n
+                                ? "bg-[#FFDC30] text-[#0a2a5c]"
+                                : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                        <input
+                          type="number"
+                          min={7}
+                          max={10}
+                          value={bedroom.sharedWithCount >= 7 && bedroom.sharedWithCount <= 10 ? String(bedroom.sharedWithCount) : ""}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val) && val >= 2 && val <= 10) {
+                              const newBedrooms = [...data.bedrooms];
+                              newBedrooms[index] = { ...bedroom, sharedWithCount: val };
+                              setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                            }
+                          }}
+                          placeholder="7+"
+                          className="w-14 px-2 py-2 rounded-lg text-sm border border-gray-200 text-center focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <PhotoUpload
+                    label="Foto del baño"
+                    multiple
+                    maxFiles={2}
+                    value={bedroom.bathroomPhoto || []}
+                    onChange={(files) => {
+                      const newBedrooms = [...data.bedrooms];
+                      newBedrooms[index] = { ...bedroom, bathroomPhoto: files };
+                      setData((d) => ({ ...d, bedrooms: newBedrooms }));
+                    }}
+                    maxPreview={2}
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Tipo de baño</label>
                   <ChoiceGrid
@@ -1405,48 +2002,8 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                       setData((d) => ({ ...d, bedrooms: newBedrooms }));
                     }}
                     options={[
-                      { value: "Propio", label: "Propio" },
-                      { value: "Compartido", label: "Compartido" },
-                    ]}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">Foto del baño (opcional)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      const newBedrooms = [...data.bedrooms];
-                      newBedrooms[index] = { ...bedroom, bathroomPhoto: file };
-                      setData((d) => ({ ...d, bedrooms: newBedrooms }));
-                    }}
-                    className="w-full"
-                  />
-                  {bedroom.bathroomPhoto && (
-                    <div className="mt-2">
-                      <img
-                        src={URL.createObjectURL(bedroom.bathroomPhoto)}
-                        alt="Bathroom preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-[#0a2a5c] mb-3">¿Es para una sola persona o compartida?</label>
-                  <ChoiceGrid
-                    value={bedroom.bedroomType}
-                    onChange={(v) => {
-                      const newBedrooms = [...data.bedrooms];
-                      newBedrooms[index] = { ...bedroom, bedroomType: v };
-                      setData((d) => ({ ...d, bedrooms: newBedrooms }));
-                    }}
-                    options={[
-                      { value: "Una sola persona", label: "Una sola persona" },
-                      { value: "Compartida", label: "Compartida" },
+                      { value: "Propio", label: "Propio", icon: <IconBanoPropio /> },
+                      { value: "Compartido", label: "Compartido", icon: <IconBanoCompartido /> },
                     ]}
                   />
                 </div>
@@ -1457,27 +2014,20 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
       }
     }
 
-    base.push({
-      key: "description",
-      title: "Descripción corta",
-      canContinue: data.description.trim().length >= 10,
-      render: () => (
-        <textarea
-          rows={4}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
-          placeholder="Ej. Ideal para estudiantes, zona tranquila, cerca de transporte..."
-          value={data.description}
-          onChange={(e) => setData((d) => ({ ...d, description: e.target.value }))}
-        />
-      ),
-    });
+    // Fotos de habitaciones cuando no hay flujo por habitación: Loft, o Cuarto/Casa/Depa sin habitaciones a registrar
+    const showFotosHabitacionesStandalone =
+      data.propertyType === "Loft" ||
+      (data.propertyType === "Cuarto" && data.numRoomsToRent === 0) ||
+      ((data.propertyType === "Casa" || data.propertyType === "Departamento") && data.numRooms === 0);
+    if (showFotosHabitacionesStandalone) {
+      base.push(fotosHabitacionesStep);
+    }
 
     return base;
   }, [
     data.propertyType,
     data.dentroDe,
     data.numRoomsToRent,
-    data.registerRoomDetails,
     data.rooms,
     data.currentRoomIndex,
     data.campus,
@@ -1641,15 +2191,17 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
           </div>
 
           <div className="mt-8 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => {
-                setStep((s) => Math.max(0, s - 1));
-              }}
-              className="px-5 py-3 rounded-xl border border-gray-200 text-gray-700 hover:border-gray-300"
-            >
-              ← Anterior
-            </button>
+            {step > 0 ? (
+              <button
+                type="button"
+                onClick={() => setStep((s) => s - 1)}
+                className="px-5 py-3 rounded-xl border border-gray-200 text-gray-700 hover:border-gray-300"
+              >
+                ← Anterior
+              </button>
+            ) : (
+              <div />
+            )}
 
             <button
               type="button"
