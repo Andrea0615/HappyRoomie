@@ -756,58 +756,94 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
     if (data.propertyType === "Cuarto") {
       base.push({
         key: "numRoomsToRent",
-        title: "¿Cuántas habitaciones quieres registrar?",
+        title: "¿Cuántas habitaciones deseas registrar?",
         subtitle: "(Ej. tu casa tiene 3, pero aquí registrarás 2)",
         canContinue: data.numRoomsToRent >= 1 && data.numRoomsToRent <= 5 ? true : (data.numRoomsToRent >= 6),
         render: () => (
           <div className="space-y-4">
-            <ChoiceGrid
-              value={data.numRoomsToRent <= 5 ? data.numRoomsToRent.toString() : "5 or more"}
-              onChange={(v) => {
-                if (v === "5 or more") {
-                  const rooms = Array.from({ length: 6 }, () => ({
-                    hasFurniture: null,
-                    furniture: [],
-                    furnitureOtroInput: "",
-                    bedType: "",
-                    roomPhoto: [],
-                    bathroomPhoto: [],
-                    bathroomType: "",
-                    bedroomType: "",
-                    sharedWithCount: 2,
-                    price: 5000,
-                  }));
-                  setData((d) => ({ ...d, numRoomsToRent: 6, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
-                } else {
-                  const count = parseInt(v, 10);
-                  const rooms = Array.from({ length: count }, () => ({
-                    hasFurniture: null,
-                    furniture: [],
-                    furnitureOtroInput: "",
-                    bedType: "",
-                    roomPhoto: [],
-                    bathroomPhoto: [],
-                    bathroomType: "",
-                    bedroomType: "",
-                    sharedWithCount: 2,
-                    price: 5000,
-                  }));
-                  setData((d) => ({ ...d, numRoomsToRent: count, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
-                }
-              }}
-              cols={3}
-              options={[
-                { value: "1", label: "1" },
-                { value: "2", label: "2" },
-                { value: "3", label: "3" },
-                { value: "4", label: "4" },
-                { value: "5", label: "5" },
-                { value: "5 or more", label: "5 o más" },
-              ]}
-            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {["1", "2", "3", "4", "5"].map((v) => {
+                const selected = data.numRoomsToRent === parseInt(v, 10);
+                return (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => {
+                      const count = parseInt(v, 10);
+                      const rooms = Array.from({ length: count }, () => ({
+                        hasFurniture: null,
+                        furniture: [],
+                        furnitureOtroInput: "",
+                        bedType: "",
+                        roomPhoto: [],
+                        bathroomPhoto: [],
+                        bathroomType: "",
+                        bedroomType: "",
+                        sharedWithCount: 2,
+                        price: 5000,
+                      }));
+                      setData((d) => ({ ...d, numRoomsToRent: count, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
+                    }}
+                    aria-pressed={selected}
+                    className={`relative h-20 rounded-2xl border transition flex items-center justify-center text-[#0a2a5c] ${
+                      selected
+                        ? "border-[#FFDC30] bg-yellow-50 shadow-sm"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                  >
+                    {selected && (
+                      <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#FFDC30] text-[#0a2a5c] text-sm font-bold flex items-center justify-center">
+                        ✓
+                      </span>
+                    )}
+                    <div className="text-3xl font-extrabold">{v}</div>
+                  </button>
+                );
+              })}
+
+              {(() => {
+                const selected = data.numRoomsToRent >= 6;
+                return (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const rooms = Array.from({ length: 6 }, () => ({
+                        hasFurniture: null,
+                        furniture: [],
+                        furnitureOtroInput: "",
+                        bedType: "",
+                        roomPhoto: [],
+                        bathroomPhoto: [],
+                        bathroomType: "",
+                        bedroomType: "",
+                        sharedWithCount: 2,
+                        price: 5000,
+                      }));
+                      setData((d) => ({ ...d, numRoomsToRent: 6, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
+                    }}
+                    aria-pressed={selected}
+                    className={`relative h-20 rounded-2xl border transition flex items-center justify-center text-[#0a2a5c] ${
+                      selected
+                        ? "border-[#FFDC30] bg-yellow-50 shadow-sm"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                  >
+                    {selected && (
+                      <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#FFDC30] text-[#0a2a5c] text-sm font-bold flex items-center justify-center">
+                        ✓
+                      </span>
+                    )}
+                    <div className="text-center leading-tight">
+                      <div className="text-2xl font-extrabold">6</div>
+                      <div className="text-sm font-semibold text-gray-600 -mt-1">o más</div>
+                    </div>
+                  </button>
+                );
+              })()}
+            </div>
             {data.numRoomsToRent >= 6 && (
-              <div>
-                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones quieres registrar?</label>
+              <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                <label className="block text-sm font-medium text-[#0a2a5c] mb-2">¿Cuántas habitaciones deseas registrar?</label>
                 <input
                   type="number"
                   min={6}
@@ -828,9 +864,10 @@ export default function RegistrarMiPropiedad({ onBack, onDone }) {
                     }));
                     setData((d) => ({ ...d, numRoomsToRent: value, registerRoomDetails: true, rooms, currentRoomIndex: 0 }));
                   }}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFDC30] text-center text-lg font-bold text-[#0a2a5c]"
                   placeholder="Escribe el número"
                 />
+                <p className="text-xs text-gray-500 mt-2">Mínimo 6</p>
               </div>
             )}
           </div>
